@@ -21,6 +21,8 @@ LIBS = -lcgi
 
 OBJS = cgi.o cookies.o
 
+CC += $(IFLAGS)
+
 libcgi.a: $(OBJS)
 	ar rc $@ $^
 
