@@ -14,10 +14,13 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
 
-CFLAGS = -I.
+CFLAGS = -I. -Wall -O5
 
 cgitest: cgitest.o cgi.o
 	$(CC) $(CFLAGS) -o cgitest cgitest.o cgi.o
 
 install: cgitest
 	install -m 755 cgitest /usr/lib/cgi-bin
+
+clean:
+	rm -f cgitest cgitest.o cgi.o

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include <malloc.h>
 #include <cgi.h>
 
@@ -79,7 +80,7 @@ s_cgi **cgiInit ()
     char *line;
     int numargs;
     char *cp, *ip, *esp;
-    s_cgi **result, *var;
+    s_cgi **result;
     int i;
     char tmp[101];
 
@@ -190,13 +191,25 @@ s_cgi **cgiInit ()
 
 char *cgiGetValue(s_cgi **parms, const char *var)
 {
-  int i;
+    int i;
 
-  if (parms)
-    for (i=0;parms[i]; i++)
-      if (!strcmp(var,parms[i]->name))
-	return parms[i]->value;
-  return NULL;
+    if (parms)
+	for (i=0;parms[i]; i++)
+	    if (!strcmp(var,parms[i]->name)) {
+		if (cgiDebug)
+		    if (cgiDebugStderr)
+			fprintf (stderr, "%s found as %s\n", var, parms[i]->value);
+		    else
+			printf ("%s found as %s<br>\n", var, parms[i]->value);
+		return parms[i]->value;
+	    }
+    if (cgiDebug)
+	if (cgiDebugStderr)
+	    fprintf (stderr, "%s not found\n", var);
+	else
+	    printf ("%s not found<br>\n", var);
+
+    return NULL;
 }
 
 /*

@@ -42,7 +42,7 @@ void eval_cgi()
 }
 
 
-main ()
+void main ()
 {
     char *path_info = NULL;
 
