@@ -1,5 +1,5 @@
-.\" cgiInit - Initializes cgi library
-.\" Copyright (c) 1998  Martin Schulze <joey@infodrom.north.de>
+.\" cgiInit - Initializes CGI library
+.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,19 +15,19 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiInit 3 "14 February 1998" "Debian GNU/Linux" "Programmer's Manual"
+.TH cgiInit 3 "14 August 1999" "Debian GNU/Linux" "Programmer's Manual"
 .SH NAME
-cgiInit \- Initializes cgi library
+cgiInit \- Initializes CGI library
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.B s_cgi **cgiInit();
+.B s_cgi **cgiInit ();
 .fi
 .SH DESCRIPTION
-This routine initializes the cgi routines.  Mainly it reads in and
-decodes cgi data for later processing.  If the program is not called
-via cgi interface the user is prompted to type in cgi variable
+This routine initializes the CGI routines.  Mainly it reads in and
+decodes CGI data for later processing.  If the program is not called
+via CGI interface the user is prompted to type in CGI variable
 bindings via stdin - just like CGI.pm does.
 
 This routine normally is the first or second.  Only
@@ -35,15 +35,16 @@ This routine normally is the first or second.  Only
 may be called before.  If debugging is enabled this routine produces
 some additional output.
 .SH "RETURN VALUE"
-On success a set of cgi variable bindings is returned that is needed
+On success a set of CGI variable bindings is returned that is needed
 for later processing.  If an error occurs NULL is returned.
 
 .SH "AUTHOR"
-This cgi library is written by Martin Schulze
+This CGI library is written by Martin Schulze
 <joey@infodrom.north.de>.  If you have additions or improvements
 please get in touch with him.
 
 .SH "SEE ALSO"
 .BR cgiDebug (3),
 .BR cgiHeader (3),
-.BR cgiGetValue (3).
+.BR cgiGetValue (3),
+.BR cgiGetVariables (3).

@@ -1,5 +1,5 @@
 .\" cgiHeader - Write the cgi-bin header
-.\" Copyright (c) 1998  Martin Schulze <joey@infodrom.north.de>
+.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,14 +15,14 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiInit 3 "14 February 1998" "Debian GNU/Linux" "Programmer's Manual"
+.TH cgiInit 3 "14 August 1999" "Debian GNU/Linux" "Programmer's Manual"
 .SH NAME
 cgiHeader \- Write the cgi-bin header
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.B void cgiHeader();
+.B void cgiHeader ();
 .fi
 .SH DESCRIPTION
 This routine just prints out the Contents-type: line to make the web
@@ -32,7 +32,7 @@ server happy.
 This routine does not return a value.
 
 .SH "AUTHOR"
-This cgi library is written by Martin Schulze
+This CGI library is written by Martin Schulze
 <joey@infodrom.north.de>.  If you have additions or improvements
 please get in touch with him.
 

@@ -16,14 +16,16 @@
 
 CFLAGS = -I. -Wall -O2 -g
 
-libcgi.a: cgi.o
-	ar rc libcgi.a cgi.o
+OBJS = cgi.o
 
-cgitest: cgitest.o cgi.o
-	$(CC) $(CFLAGS) -o cgitest cgitest.o cgi.o
+libcgi.a: $(OBJS)
+	ar rc $@ $^
+
+cgitest: cgitest.o $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 install: cgitest
 	install -m 755 cgitest /usr/lib/cgi-bin
 
 clean:
-	rm -f cgitest cgitest.o cgi.o libcgi.a
+	rm -f cgitest cgitest.o libcgi.a $(OBJS)

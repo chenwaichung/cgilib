@@ -48,7 +48,14 @@ s_cgi **cgiInit ();
  *  Returns the value of the specified variable or NULL if it's empty
  *  or doesn't exist.
  */
-char *cgiGetValue(s_cgi **parms, const char *var);
+char *cgiGetValue (s_cgi **parms, const char *var);
+
+/* cgiGetVariables
+ *
+ *  Returns the value of the specified variable or NULL if it's empty
+ *  or doesn't exist.
+ */
+char **cgiGetVariables (s_cgi **parms);
 
 /* cgiRedirect
  *

@@ -1,6 +1,6 @@
 /*
     cgitest.c - Testprogram for cgi.o
-    Copyright (c) 1998  Martin Schulze <joey@infodrom.north.de>
+    Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 
 s_cgi **cgi;
 
+#define URL "http://www.infodrom.north.de/cgilib/"
+
 void print_form()
 {
     printf ("<h1>Test-Form</h1>\n");
@@ -37,6 +39,14 @@ void print_form()
     printf ("<center><input type=submit value=Submit> ");
     printf ("<input type=reset value=Reset></center>\n");
     printf ("</form>\n");
+    printf ("<hr width=50%%><form action=\"/cgi-bin/cgitest/listall\" method=post>\n");
+    printf ("Input: <input name=string size=50>\n<br>");
+    printf ("<select name=select multiple>\n<option>Nr. 1\n<option>Nr. 2\n<option>Nr. 3\n<option>Nr. 4\n</select>\n");
+    printf ("Text: <textarea name=text cols=50>\n</textarea>\n");
+    printf ("<center><input type=submit value=Show> ");
+    printf ("<input type=reset value=Reset></center>\n");
+    printf ("</form>\n");
+    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
 }
 
 void eval_cgi()
@@ -47,8 +57,30 @@ void eval_cgi()
     printf ("<b>select</b>: %s<p>\n", cgiGetValue(cgi, "select"));
 }
 
+void listall (char **env)
+{
+  char **vars;
+  char *val;
+  int i;
 
-void main ()
+  printf ("<h3>Environment Variables</h3>\n<pre>\n");
+  for (i=0; env[i]; i++)
+    printf ("%s\n", env[i]);
+  
+  printf ("</pre>\n<h3>CGI Variables</h3>\n<pre>\n");
+
+  vars = cgiGetVariables (cgi);
+  if (!vars)
+      return;
+
+  for (i=0; vars[i] != NULL; i++) {
+      val = cgiGetValue (cgi, vars[i]);
+      printf ("%s=%s\n", vars[i], val?val:"");
+  }
+  printf ("</pre>\n");
+}
+
+int main (int argc, char **argv, char **env)
 {
     char *path_info = NULL;
 
@@ -60,11 +92,17 @@ void main ()
 	if (!strcmp(path_info, "/redirect")) {
 	    cgiRedirect("http://www.infodrom.north.de/");
 	    exit (0);
+	} else if (!strcmp(path_info, "/listall")) {
+            cgiHeader();
+	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
+	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    listall (env);
 	} else {
 	    cgiHeader();
-	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body>\n");
-	    printf ("<h1>cgilib</h1>\n");
-	    printf ("path_info: %s<br>\n", path_info);
+	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
+	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    if (strlen (path_info))
+		printf ("path_info: %s<br>\n", path_info);
 	    if (!strcmp(path_info, "/insertdata")) {
 		eval_cgi();
 	    } else
@@ -72,12 +110,13 @@ void main ()
 	}
     } else {
 	cgiHeader();
-	printf ("<html>\n<head><title>cgilib</title></title>\n\n<body>\n");
-	printf ("<h1>cgilib</h1>\n");
+	printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
+	printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
 	print_form();
     }
 
     printf ("\n<hr>\n</body>\n</html>\n");
+    return 0;
 }
 
 /*

@@ -1,5 +1,5 @@
 .\" cgiDebug - Set the debug level for cgi programming
-.\" Copyright (c) 1998  Martin Schulze <joey@infodrom.north.de>
+.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,14 +15,14 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiDebug 3 "14 February 1998" "Debian GNU/Linux" "Programmer's Manual"
+.TH cgiDebug 3 "14 August 1999" "Debian GNU/Linux" "Programmer's Manual"
 .SH NAME
 cgiDebug \- Set the debug level for cgi programming
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "void cgiDebug(int " level ", int " where );
+.BI "void cgiDebug (int " level ", int " where );
 .fi
 .SH DESCRIPTION
 This routine controls debugging for the cgi library.  At the moment
@@ -32,13 +32,13 @@ supported.  The second argument
 specifies if debug output should be written to stdout using HTML (1)
 or to stderr as plain text (0, default).
 
-This shoud be the first one called from the cgi library.
+This shoud be the first one called from the CGI library.
 .SH "RETURN VALUE"
 .BR cgiDebug ()
 does not return a value.
 
 .SH "AUTHOR"
-This cgi library is written by Martin Schulze
+This CGi library is written by Martin Schulze
 <joey@infodrom.north.de>.  If you have additions or improvements
 please get in touch with him.
 

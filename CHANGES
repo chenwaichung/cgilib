@@ -2,6 +2,9 @@ Version 0.5
 
  . Added Cookie support from Mikko Torni <mtorni@mail.freenet.hut.fi>
  . Added proper install target to main Makefile
+ . Corrected multiple fields code
+ . Reworked offline parser, thanks to Mikko
+ . Improved test suite
 
 
 

@@ -1,5 +1,5 @@
 /*
-    cgi.c - Some simple routines for cgi programming
+    cgi.c - Some simple routines for CGI programming
     Copyright (c) 1996-9  Martin Schulze <joey@infodrom.north.de>
 
     This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
  */
+
+/*
+    Sat Aug 24 10:39:31 MET 1999: Martin Schulze <joey@infodrom.north.de>
+	Added cgiGetVariables(), corrected multiple values code
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,7 +86,7 @@ s_cgi **cgiInit ()
     int numargs;
     char *cp, *ip, *esp, *sptr;
     s_cgi **result;
-    int i, k;
+    int i, k, len;
     char tmp[101];
 
     cp = getenv("REQUEST_METHOD");
@@ -104,24 +109,27 @@ s_cgi **cgiInit ()
 	} else
 	    return NULL;
     } else {
-	length = 0;
+        length = 0;
 	printf ("(offline mode: enter name=value pairs on standard input)\n");
 	memset (tmp, 0, sizeof(tmp));
-	for (cp = fgets(tmp, 100, stdin); cp != NULL;
-	     cp = fgets(tmp, 100, stdin) ) {
+	while((cp = fgets (tmp, 100, stdin)) != NULL) {
 	    if (strlen(tmp)) {
 		if (tmp[strlen(tmp)-1] == '\n')
 		    tmp[strlen(tmp)-1] = '&';
-		length += strlen(tmp);
-		if ((ip = (char *)malloc ((length+1) * sizeof(char))) == NULL)
-		    return NULL;
-		memset(ip, 0, length+1);
-		if (line) {
-		    sprintf(ip, "%s%s", line, tmp);
-		    free (line);
-		} else
-		    strcpy(ip, tmp);
-		line = ip;
+		if (length) {
+		    length += strlen(tmp);
+		    len = (length+1) * sizeof(char);
+		    if ((line = (char *)realloc (line, len)) == NULL)
+		        return NULL;
+		    strcat (line, tmp);
+		} else {
+		    length = strlen(tmp);
+		    len = (length+1) * sizeof(char);
+		    if ((line = (char *)malloc (len)) == NULL)
+		        return NULL;
+		    memset (line, 0, len);
+		    strcpy (line, tmp);
+		}
 	    }
 	    memset (tmp, 0, sizeof(tmp));
 	}
@@ -159,19 +167,20 @@ s_cgi **cgiInit ()
 	    printf ("%d cgi variables found.<br>\n", numargs);
     }
 
-    if ((result = (s_cgi **)malloc((numargs+1) * sizeof(s_cgi *))) == NULL)
+    len = (numargs+1) * sizeof(s_cgi *);
+    if ((result = (s_cgi **)malloc (len)) == NULL)
 	return NULL;
-    memset (result, 0, (numargs+1) * sizeof(s_cgi *));
+    memset (result, 0, len);
 
     cp = line;
     i=0;
     while (*cp) {
-	if ((ip = (char *)index(cp, '&')) != NULL) {
+	if ((ip = (char *)strchr(cp, '&')) != NULL) {
 	    *ip = '\0';
 	}else
 	    ip = cp + strlen(cp);
 
-	if ((esp=(char *)index(cp, '=')) == NULL) {
+	if ((esp=(char *)strchr(cp, '=')) == NULL) {
 	    cp = ++ip;
 	    continue;
 	}
@@ -206,11 +215,12 @@ s_cgi **cgiInit ()
 		}
 		i++;
 	    } else {	/* There is already such a name, suppose a mutiple field */
-		if ((sptr = (char *)malloc((strlen(result[k]->value)+(ip-esp)+2)* sizeof(char))) == NULL)
-		    return NULL;
-		memset (sptr, 0, strlen(result[k]->value)+(ip-esp)+2);
-		sprintf (sptr, "%s\n", result[k]->value);
 		cp = ++esp;
+		len = (strlen(result[k]->value)+(ip-esp)+2) * sizeof (char);
+		if ((sptr = (char *)malloc(len)) == NULL)
+		    return NULL;
+		memset (sptr, 0, len);
+		sprintf (sptr, "%s\n", result[k]->value);
 		strncat(sptr, cp, ip-esp);
 		free(result[k]->value);
 		result[k]->value = sptr;
@@ -221,7 +231,7 @@ s_cgi **cgiInit ()
     return result;
 }
 
-char *cgiGetValue(s_cgi **parms, const char *var)
+char *cgiGetValue (s_cgi **parms, const char *var)
 {
     int i;
 
@@ -243,6 +253,29 @@ char *cgiGetValue(s_cgi **parms, const char *var)
 	    printf ("%s not found<br>\n", var);
     }
     return NULL;
+}
+
+char **cgiGetVariables (s_cgi **parms)
+{
+    int i;
+    char **res = NULL;
+    int len;
+
+    if (parms) {
+	for (i=0;parms[i]; i++);
+	len = sizeof (char *) * ++i;
+	if ((res = (char **)malloc (len)) == NULL)
+	    return NULL;
+	memset (res, 0, len);
+	for (i=0;parms[i]; i++) {
+	    len = strlen (parms[i]->name) +1;
+	    if ((res[i] = (char *)malloc (len)) == NULL)
+		return NULL;
+	    memset (res[i], 0, len);
+	    strcpy (res[i], parms[i]->name);
+	}
+    }
+    return res;
 }
 
 void cgiRedirect (const char *url)
