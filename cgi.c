@@ -251,7 +251,6 @@ void cgiRedirect (const char *url)
     }
 }
 
-
 /*
  * Local variables:
  *  c-indent-level: 4
