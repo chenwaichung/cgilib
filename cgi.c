@@ -65,7 +65,7 @@ char *cgiDecodeString (char *text)
 	    *(xp++) = *cp;
 	}
     }
-    bzero(xp, cp-xp);
+    memset(xp, 0, cp-xp);
     return text;
 }
 
@@ -112,7 +112,7 @@ s_cgi **cgiInit ()
 		length += strlen(tmp);
 		if ((ip = (char *)malloc (length * sizeof(char))) == NULL)
 		    return NULL;
-		bzero(ip, length);
+		memset(ip, 0, length);
 		if (line) {
 		    if (line[strlen(line)-1] == '\n')
 			line[strlen(line)-1] = '&';
@@ -158,7 +158,7 @@ s_cgi **cgiInit ()
 
     if ((result = (s_cgi **)malloc((numargs+1) * sizeof(s_cgi *))) == NULL)
 	return NULL;
-    bzero (result, (numargs+1) * sizeof(s_cgi *));
+    memset (result, 0, (numargs+1) * sizeof(s_cgi *));
 
     cp = line;
     i=0;
@@ -187,12 +187,12 @@ s_cgi **cgiInit ()
 		    return NULL;
 		if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
 		    return NULL;
-		bzero (result[i]->name, esp-cp+1);
+		memset (result[i]->name, 0, esp-cp+1);
 		strncpy(result[i]->name, cp, esp-cp);
 		cp = ++esp;
 		if ((result[i]->value = (char *)malloc((ip-esp+1) * sizeof(char))) == NULL)
 		    return NULL;
-		bzero (result[i]->value, ip-esp+1);
+		memset (result[i]->value, 0, ip-esp+1);
 		strncpy(result[i]->value, cp, ip-esp);
 		result[i]->value = cgiDecodeString(result[i]->value);
 		if (cgiDebugLevel) {
@@ -205,7 +205,7 @@ s_cgi **cgiInit ()
 	    } else {	/* There is already such a name, suppose a mutiple field */
 		if ((sptr = (char *)malloc((strlen(result[k]->value)+(ip-esp)+2)* sizeof(char))) == NULL)
 		    return NULL;
-		bzero (sptr, strlen(result[k]->value)+(ip-esp)+2);
+		memset (sptr, 0, strlen(result[k]->value)+(ip-esp)+2);
 		sprintf (sptr, "%s\n", result[k]->value);
 		cp = ++esp;
 		strncat(sptr, cp, ip-esp);
