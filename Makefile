@@ -1,4 +1,4 @@
-#   Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
+#   Copyright (c) 1998,9,2001 by Martin Schulze <joey@infodrom.org>
 
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
 
-CFLAGS = -I. -Wall -O2 -g
+CFLAGS = -Wall -O2 -g
+IFLAGS = -I.
 LDFLAGS = -L.
 LIBS = -lcgi
 
@@ -24,10 +25,10 @@ libcgi.a: $(OBJS)
 	ar rc $@ $^
 
 cgitest: cgitest.o libcgi.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(IFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 jumpto: jumpto.o libcgi.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(IFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 all: libcgi.a cgitest jumpto
 
