@@ -1,9 +1,10 @@
-Version 0.5
+Version 0.5, 
 
  . Added proper install target to main Makefile
  . Corrected multiple fields code
  . Reworked offline parser, thanks to Mikko
  . Improved test suite
+ . Added cgiGetVariables() to return a list of all variables
  . Fixed problem with name being a prefix of another
  . Also decode HTTP strings for multiple fields
  . Added cgiSetType() and cgiSetHeader() with documentation
@@ -12,11 +13,33 @@ Version 0.5
  . Added cgiFree() to free internal datastructures
  . Internal reorganization
  . CAUTION: s_cgi **cgi is now s_cgi *cgi in programs
+ . Added cgiFreeList() to free zero terminated lists of arrays
 
-
-
-Version 0.4
+Version 0.4, 1998/03/20
 
  . Initial and fixed versions.
- . For details refer to debian/changelog
+ . Corrected html code in redirection
+ . Corrected number of bytes in redirection
 
+Version 0.3, 1998/02/23
+
+ . Fixed little mistake in offline mode
+ . Included another example, jumpto
+
+Version 0.2, 1998/02/18
+
+ . Corrected debugging
+ . Added cgiRedirect()
+ . Added cgiRedirect(3) manpage
+ . Added call to cgiRedirect() to example cgitest.c
+ . Added compile notice to cgitest.c
+ . Added support for the GET method
+ . Reorganized POST/GET/stdin support
+ . Implemented support for multiple fields and updated manpage
+
+Version 0.1, 1998/02/15
+
+ . Initial version
+ . DFSG Free CGI library
+ . Very small package
+ . Contains all important manpages

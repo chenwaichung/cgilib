@@ -1,4 +1,4 @@
-#   Copyright (c) 1998,9  Martin Schulze <joey@infodrom.north.de>
+#   Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -35,4 +35,9 @@ install: cgitest
 	install -m 755 cgitest /usr/lib/cgi-bin
 
 clean:
-	rm -f cgitest cgitest.o jumpto jumpto.o libcgi.a $(OBJS)
+	rm -f cgitest cgitest.o jumpto jumpto.o libcgi.a $(OBJS) *.[35].html
+
+htmlman:
+	for f in *.[35]; do \
+	  man -l $$f|rman -f HTML --title $$f -r "%s.%s.html" > $$f.html; \
+	done

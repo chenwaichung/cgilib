@@ -1,6 +1,9 @@
 This is a list of people who have helped me working on this CGI
 library.
 
+Martin Schulze <joey@infodrom.north.de>
+	- Design, Implementation, Maintenance
+
 Mikko Torni <mtorni@mail.freenet.hut.fi>
 
 	- Cookie support (abandoned though)

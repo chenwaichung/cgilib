@@ -64,7 +64,7 @@ void cgiDebug (int level, int where);
 
 /* cgiInit
  *
- *  Reads in variables set via POST or stdin
+ *  Reads in variables set via POST or stdin, reads HTTP Cookies.
  */
 s_cgi *cgiInit ();
 
@@ -96,9 +96,15 @@ s_cookie *cgiGetCookie (s_cgi *parms, const char *name);
 
 /* cgiGetCookies
  *
- * Returns the name of all cookies.
+ * Returns a list of name of all cookies.
  */
 char **cgiGetCookies (s_cgi *parms);
+
+/* cgiFreeList
+ *
+ * Frees a list as returned by cgiGetVariables() and cgiGetCookies()
+ */
+void cgiFreeList (char **list);
 
 /* cgiFree
  *

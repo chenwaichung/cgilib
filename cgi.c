@@ -387,6 +387,15 @@ void cgiRedirect (const char *url)
     }
 }
 
+void cgiFreeList (char **list)
+{
+    int i;
+
+    for (i=0; list[i] != NULL; i++)
+	free (list[i]);
+	free (list);
+}
+
 void cgiFree (s_cgi *parms)
 {
     int i;

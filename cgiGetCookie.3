@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetCookie 3 "17 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiGetCookie 3 "20 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiGetCookie \- Return a cookie
 .SH SYNOPSYS
@@ -42,6 +42,20 @@ The s_cookie structure is defined as follows:
 
 You must NOT free this structure since it is only a pointer to
 internal data.
+
+To set a cookie in your program you'll need to manually add additional
+header lines.  Please take a look at
+.IR cgitest.c .
+Basically, you'll need to add the following code:
+
+.nf
+   cgiSetHeader ("Set-Cookie", "Version=1; name=value; Path=/");
+   cgiHeader();
+.fi
+
+Please read the included file
+.I cookies.txt
+as well.
 
 .SH "RETURN VALUE"
 On success a pointer to a s_cookie structure is returned.  If no

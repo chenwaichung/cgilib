@@ -1,4 +1,4 @@
-.\" cgiGetVariables - Returns a list of CGI variables
+.\" cgiFreeList - Frees memory used by a list
 .\" Copyright (c) 1999 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
@@ -15,26 +15,21 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetVariables 3 "20 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiFreeList 3 "20 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiGetVariables \- Returns a list of CGI variables
+cgiFreeList \- Frees memory used by a list
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char **cgiGetVariables (s_cgi *" parms );
+.BI "void cgiFreeList (char **" list );
 .fi
 .SH DESCRIPTION
-This routine returns a NULL terminated array of CGI variables that are
-available.  To get the value of a variable you'll have to use
-.BR cgiGetValue (3).
-To free the memory allocated use
-.BR cgiFreeList (3).
-
-.SH "RETURN VALUE"
-On success a NULL terminated array of strings is returned.  The last
-element is set to NULL.  If an error occurred or if no variables were
-available NULL is returned.
+A zero terminated list of characters is returned by the routines
+.BR cgiGetVariables (3)
+and
+.BR cgiGetCookies (3).
+This routine frees memory allocated by these routines.
 
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
@@ -42,10 +37,5 @@ This CGI library is written by Martin Schulze
 please get in touch with him.
 
 .SH "SEE ALSO"
-.BR cgiGetValue (3),
-.BR cgiGetCookie (3),
-.BR cgiGetCookies (3),
-.BR cgiFreeList (3),
-.BR cgiDebug (3),
-.BR cgiHeader (3),
-.BR cgiInit (3).
+.BR cgiGetVariables (3),
+.BR cgiGetCookies (3).

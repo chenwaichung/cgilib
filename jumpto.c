@@ -39,7 +39,7 @@
 #include <stdio.h>
 #include <cgi.h>
 
-s_cgi **cgiArg;
+s_cgi *cgiArg;
 
 void main()
 {

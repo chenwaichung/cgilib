@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetCookies 3 "17 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiGetCookies 3 "20 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiGetCookies \- Returns a list of cookies
 .SH SYNOPSYS
@@ -29,25 +29,8 @@ This routine returns a NULL terminated array of cookies that were
 transmitted by the client.  To get the value of a cookie you'll have
 to use
 .BR cgiGetCookie (3).
-
-You have to free the array on your own.  You can use the
-following code fragment:
-.nf
-    char **vars;
-    int i;
-    s_cgi *cgi;
-
-    cgi = cgiInit();
-
-    vars = cgiGetCookies (cgi);
-    if (!vars)
-	return;
-
-    for (i=0; vars[i] != NULL; i++)
-        free (vars[i]);
-	
-    free (vars);
-.fi
+To free the allocated memory, use
+.BR cgiFreeList (3).
 
 .SH "RETURN VALUE"
 On success a NULL terminated array of strings is returned.  The last
@@ -63,6 +46,7 @@ please get in touch with him.
 .BR cgiGetValue (3),
 .BR cgiGetVariables (3),
 .BR cgiGetCookie (3),
+.BR cgiFreeList (3),
 .BR cgiDebug (3),
 .BR cgiHeader (3),
 .BR cgiInit (3).
