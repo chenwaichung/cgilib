@@ -1,6 +1,6 @@
 /*
     cgi.c - Some simple routines for cgi programming
-    Copyright (c) 1996-8  Martin Schulze <joey@infodrom.north.de>
+    Copyright (c) 1996-9  Martin Schulze <joey@infodrom.north.de>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -106,27 +106,28 @@ s_cgi **cgiInit ()
     } else {
 	length = 0;
 	printf ("(offline mode: enter name=value pairs on standard input)\n");
+	memset (tmp, 0, sizeof(tmp));
 	for (cp = fgets(tmp, 100, stdin); cp != NULL;
 	     cp = fgets(tmp, 100, stdin) ) {
 	    if (strlen(tmp)) {
+		if (tmp[strlen(tmp)-1] == '\n')
+		    tmp[strlen(tmp)-1] = '&';
 		length += strlen(tmp);
-		if ((ip = (char *)malloc (length * sizeof(char))) == NULL)
+		if ((ip = (char *)malloc ((length+1) * sizeof(char))) == NULL)
 		    return NULL;
-		memset(ip, 0, length);
+		memset(ip, 0, length+1);
 		if (line) {
-		    if (line[strlen(line)-1] == '\n')
-			line[strlen(line)-1] = '&';
-		    strcpy(ip, line);
-		}
-		ip = strcat(ip, tmp);
-		if (line)
+		    sprintf(ip, "%s%s", line, tmp);
 		    free (line);
+		} else
+		    strcpy(ip, tmp);
 		line = ip;
 	    }
+	    memset (tmp, 0, sizeof(tmp));
 	}
 	if (!line)
 	    return NULL;
-	if (line[strlen(line)-1] == '\n')
+	if (line[strlen(line)-1] == '&')
 	    line[strlen(line)-1] = '\0';
     }
 
@@ -135,11 +136,12 @@ s_cgi **cgiInit ()
      *  and look like  foo=bar&foobar=barfoo&foofoo=
      */
 
-    if (cgiDebugLevel > 0)
+    if (cgiDebugLevel > 0) {
 	if (cgiDebugStderr)
 	    fprintf (stderr, "Received cgi input: %s\n", line);
 	else
 	    printf ("<b>Received cgi input</b><br>\n<pre>\n--\n%s\n--\n</pre>\n\n", line);
+    }
 
     for (cp=line; *cp; cp++)
 	if (*cp == '+')
@@ -150,11 +152,12 @@ s_cgi **cgiInit ()
 	    if (*cp == '&') numargs++;
     } else
 	numargs = 0;
-    if (cgiDebugLevel > 0)
+    if (cgiDebugLevel > 0) {
 	if (cgiDebugStderr)
 	    fprintf (stderr, "%d cgi variables found.\n", numargs);
 	else
 	    printf ("%d cgi variables found.<br>\n", numargs);
+    }
 
     if ((result = (s_cgi **)malloc((numargs+1) * sizeof(s_cgi *))) == NULL)
 	return NULL;
@@ -225,19 +228,20 @@ char *cgiGetValue(s_cgi **parms, const char *var)
     if (parms)
 	for (i=0;parms[i]; i++)
 	    if (!strcmp(var,parms[i]->name)) {
-		if (cgiDebugLevel > 0)
+		if (cgiDebugLevel > 0) {
 		    if (cgiDebugStderr)
 			fprintf (stderr, "%s found as %s\n", var, parms[i]->value);
 		    else
 			printf ("%s found as %s<br>\n", var, parms[i]->value);
+		}
 		return parms[i]->value;
 	    }
-    if (cgiDebugLevel)
+    if (cgiDebugLevel) {
 	if (cgiDebugStderr)
 	    fprintf (stderr, "%s not found\n", var);
 	else
 	    printf ("%s not found<br>\n", var);
-
+    }
     return NULL;
 }
 
