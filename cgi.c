@@ -124,6 +124,8 @@ s_cgi **cgiInit ()
 		line = ip;
 	    }
 	}
+	if (!line)
+	    return NULL;
 	if (line[strlen(line)-1] == '\n')
 	    line[strlen(line)-1] = '\0';
     }
