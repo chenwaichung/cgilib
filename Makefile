@@ -14,7 +14,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
 
-CFLAGS = -I. -Wall -O5
+CFLAGS = -I. -Wall -O2 -g
+
+libcgi.a: cgi.o
+	ar rc libcgi.a cgi.o
 
 cgitest: cgitest.o cgi.o
 	$(CC) $(CFLAGS) -o cgitest cgitest.o cgi.o
