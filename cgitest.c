@@ -113,7 +113,7 @@ int main (int argc, char **argv, char **env)
             cgiHeader();
 	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
 	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
-	    printf ("<h3>Cookie "Library" set</h3>\n");
+	    printf ("<h3>Cookie Library set</h3>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest\">Test</a><p>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall\">List Everything</a><p>\n");
