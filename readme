@@ -20,9 +20,9 @@ If you want to test your forms you can use the following action.
 
    <form action=/cgi-bin/cgitest/listall method=post>
 
-The /listall target will display all environment variables and all CGI
-variables that were transmitted.  This way you can test your
-implementations quite easy.
+The /listall target will display all environment variables, all CGI
+variables and all HTTP Cookies that were transmitted.  This way you
+can test your implementations quite easy.
 
 Further Documentation
 ---------------------
