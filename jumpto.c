@@ -25,7 +25,7 @@
  *
  * <form action="/cgi-bin/jumpto">
  * </form>
- * <select>
+ * <select name="url">
  * <option value="/this/is/my/url.html">My URL
  * <option value="http://www.debian.org/">Debian GNU/Linux
  * <option value="http://www.debian.org/OpenHardware/">Open Hardware
