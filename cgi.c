@@ -1,6 +1,6 @@
 /*
-    cgi.c - Ein paar Routinen fuer die Programmierung von CGI-Programmen
-    Copyright (c) 1996  Martin Schulze <joey@office.individual.net>
+    cgi.c - Some simple routines for cgi programming
+    Copyright (c) 1996-8  Martin Schulze <joey@infodrom.north.de>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,78 +14,181 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
-#include "cgi.h"
+#include <malloc.h>
+#include <cgi.h>
 
-c_var *cgiParseVar (char *binding)
+int cgiDebugLevel = 0;
+int cgiDebugStderr = 1;
+
+void cgiHeader ()
 {
-  c_var *result;
-  char *ip;
-
-  if ((ip = (char *)index(binding, '=')) == NULL)
-    return NULL;
-  if (((result = (c_var *)malloc(sizeof(c_var))) == NULL)
-      ||((result->name = (char *)malloc(ip - binding +1)) == NULL)
-      ||((result->value = (char *)malloc(strlen(ip))) == NULL))
-    return NULL;
-
-  bzero(result->name,sizeof(result->name));
-  bzero(result->value,sizeof(result->value));
-  strncpy (result->name, binding, ip++ - binding);
-  strcpy (result->value, ip);
-
-  return result;
+    printf ("Content-type: text/html\n\n");
 }
 
-c_var **cgiParseInput ()
+void cgiDebug (int level, int where)
 {
-  int length;
-  char *line;
-  char frag[50];
-  int numargs;
-  char *cp, *ip;
-  c_var **result;
-  int i;
-
-  if (!getenv("CONTENT_LENGTH"))
-    return NULL;
-  length = atoi(getenv("CONTENT_LENGTH"));
-  if ((line = (char *)malloc (length+2)) == NULL)
-    return NULL;
-
-  fgets(line, length+1, stdin);
-
-  /* line contains all values stored like okz=0923&plz=23 */
-  for (numargs=1,cp=line; *cp; cp++)
-    if (*cp == '&') numargs++;
-  if ((result = (c_var **)malloc((numargs * sizeof(c_var *))+1)) == NULL)
-    return NULL;
-
-  cp = line;
-  i=0;
-  while ((ip = (char *)index(cp, '&')) != NULL) {
-    bzero (frag, sizeof(frag));
-    strncpy (frag, cp, ip - cp);
-    result[i++] = cgiParseVar(frag);
-    cp = ++ip;
-  }
-  result[i++] = cgiParseVar(cp);
-  result[i] = NULL;
-
-/*
-  for (i=0;result[i]; i++)
-    printf ("%s=%s<br>\n", result[i]->name,result[i]->value);
-*/
-
-  return result;
+    if (level > 0)
+	cgiDebugLevel = level;
+    else
+	cgiDebugLevel = 0;
+    if (where)
+	cgiDebugStderr = 0;
+    else
+	cgiDebugStderr = 1;
 }
 
-char *cgiGetValue(c_var **parms, const char *var)
+char *cgiDecodeString (char *text)
+{
+    char *cp, *xp;
+
+    for (cp=text,xp=text; *cp; cp++) {
+	if (*cp == '%') {
+	    if (strchr("0123456789ABCDEFabcdef", *(cp+1))
+		&& strchr("0123456789ABCDEFabcdef", *(cp+2))) {
+		if (islower(*(cp+1)))
+		    *(cp+1) = toupper(*(cp+1));
+		if (islower(*(cp+2)))
+		    *(cp+2) = toupper(*(cp+2));
+		*(xp) = (*(cp+1) >= 'A' ? *(cp+1) - 'A' + 10 : *(cp+1) - '0' ) * 16
+		    + (*(cp+2) >= 'A' ? *(cp+2) - 'A' + 10 : *(cp+2) - '0');
+		xp++;cp+=2;
+	    }
+	} else {
+	    *(xp++) = *cp;
+	}
+    }
+    bzero(xp, cp-xp);
+    return text;
+}
+
+/*  cgiInit()
+ *
+ *  Read from stdin if no string is provided via CGI.  Variables that
+ *  doesn't have a value associated with it doesn't get stored.
+ */
+s_cgi **cgiInit ()
+{
+    int length;
+    char *line;
+    int numargs;
+    char *cp, *ip, *esp;
+    s_cgi **result, *var;
+    int i;
+    char tmp[101];
+
+    line = getenv("CONTENT_LENGTH");
+
+    if (line){
+	length = atoi(line);
+	if ((line = (char *)malloc (length+2)) == NULL)
+	    return NULL;
+	fgets(line, length+1, stdin);
+    } else {
+	if (!getenv("REQUEST_METHOD")) {
+	    length = 0;
+	    printf ("(offline mode: enter name=value pairs on standard input)\n");
+	    for (cp = fgets(tmp, 100, stdin); cp != NULL;
+		 cp = fgets(tmp, 100, stdin) ) {
+		if (strlen(tmp)) {
+		    length += strlen(tmp);
+		    if ((ip = (char *)malloc (length * sizeof(char))) == NULL)
+			return NULL;
+		    bzero(ip, length);
+		    if (line) {
+			if (line[strlen(line)-1] == '\n')
+			    line[strlen(line)-1] = '&';
+			strcpy(ip, line);
+		    }
+		    ip = strcat(ip, tmp);
+		    if (line)
+			free (line);
+		    line = ip;
+		}
+	    } /* for */
+	    if (line[strlen(line)-1] == '\n')
+		line[strlen(line)-1] = '\0';
+	} else
+	    return NULL;
+    }
+    /* line now contains all values stored like foo=bar&foobar=barfoo&foofoo= */
+
+    if (cgiDebugLevel > 0)
+	if (cgiDebugStderr)
+	    fprintf (stderr, "Received cgi input: %s\n", line);
+	else
+	    printf ("<b>Received cgi input</b><br>\n<pre>\n--\n%s\n--\n</pre>\n\n", line);
+
+    for (cp=line; *cp; cp++)
+	if (*cp == '+')
+	    *cp = ' ';
+
+    if (strlen(line)) {
+	for (numargs=1,cp=line; *cp; cp++)
+	    if (*cp == '&') numargs++;
+    } else
+	numargs = 0;
+    if (cgiDebugLevel > 0)
+	if (cgiDebugStderr)
+	    fprintf (stderr, "%d cgi variables found.\n", numargs);
+	else
+	    printf ("%d cgi variables found.<br>\n", numargs);
+
+    if ((result = (s_cgi **)malloc((numargs+1) * sizeof(s_cgi *))) == NULL)
+	return NULL;
+    bzero (result, (numargs+1) * sizeof(s_cgi *));
+
+    cp = line;
+    i=0;
+    while (*cp) {
+	if ((ip = (char *)index(cp, '&')) != NULL) {
+	    *ip = '\0';
+	}else
+	    ip = cp + strlen(cp);
+
+	if ((esp=(char *)index(cp, '=')) == NULL) {
+	    cp = ++ip;
+	    continue;
+	}
+
+	if (!strlen(esp)) {
+	    cp = ++ip;
+	    continue;
+	}
+
+	if (i<numargs) {
+	    if ((result[i] = (s_cgi *)malloc(sizeof(s_cgi))) == NULL)
+		return NULL;
+	    if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
+		return NULL;
+	    bzero (result[i]->name, esp-cp+1);
+	    strncpy(result[i]->name, cp, esp-cp);
+	    cp = ++esp;
+	    if ((result[i]->value = (char *)malloc((ip-esp+1) * sizeof(char))) == NULL)
+		return NULL;
+	    bzero (result[i]->value, ip-esp+1);
+	    strncpy(result[i]->value, cp, ip-esp);
+	    result[i]->value = cgiDecodeString(result[i]->value);
+	    if (cgiDebugLevel) {
+		if (cgiDebugStderr)
+		    fprintf (stderr, "%s: %s\n", result[i]->name, result[i]->value);
+		else
+		    printf ("<h3>Variable %s</h3>\n<pre>\n%s\n</pre>\n\n", result[i]->name, result[i]->value);
+	    }
+	    i++;
+	}
+	cp = ++ip;
+    }
+    return result;
+}
+
+char *cgiGetValue(s_cgi **parms, const char *var)
 {
   int i;
 
@@ -95,3 +198,11 @@ char *cgiGetValue(c_var **parms, const char *var)
 	return parms[i]->value;
   return NULL;
 }
+
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 8
+ * End:
+ */

@@ -1,6 +1,6 @@
 /*
-    cgi.h - Ein paar Routinen fuer die Programmierung von CGI-Programmen
-    Copyright (c) 1996  Martin Schulze <joey@office.individual.net>
+    cgi.h - Some simple routines for cgi programming
+    Copyright (c) 1996-8  Martin Schulze <joey@infodrom.north.de>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,27 +14,40 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
  */
 
 #ifndef _CGI_H_
 #define _CGI_H_
 
-typedef struct var_s {
+typedef struct cgi_s {
 	char	*name,
 		*value;
-} c_var;
+} s_cgi;
+
+/* cgiHeader
+ * 
+ *  returns a valid CGI Header (Content-type...)
+ */
+void cgiHeader ();
+
+/* cgiDebug
+ * 
+ *  Set/unsets debugging
+ */
+void cgiDebug (int level, int where);
 
 /*
-   cgiParseInput
+   cgiInit
    liest die Variablen eines POST-Aufrufes und gibt sie zurueck.
  */
-c_var **cgiParseInput ();
+s_cgi **cgiInit ();
 
-/*
-   cgiGetValue
-   gibt den Wert der Variablen zurueck oder NULL.
+/*  cgiGetValue
+ *
+ *  Returns the value of the specified variable or NULL if it's empty
+ *  or doesn't exist.
  */
-char *cgiGetValue(c_var **parms, const char *var);
+char *cgiGetValue(s_cgi **parms, const char *var);
 
 #endif /* _CGI_H_ */
