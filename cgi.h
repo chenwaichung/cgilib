@@ -37,13 +37,13 @@ void cgiHeader ();
  */
 void cgiDebug (int level, int where);
 
-/*
-   cgiInit
-   liest die Variablen eines POST-Aufrufes und gibt sie zurueck.
+/* cgiInit
+ *
+ *  Reads in variables set via POST or stdin
  */
 s_cgi **cgiInit ();
 
-/*  cgiGetValue
+/* cgiGetValue
  *
  *  Returns the value of the specified variable or NULL if it's empty
  *  or doesn't exist.
