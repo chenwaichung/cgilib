@@ -1,4 +1,4 @@
-.\" cgiGetValue - Return the value of a CGI variable
+.\" cgiSetType - Specify the result type
 .\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
@@ -15,29 +15,24 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetValue 3 "14 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiSetType 3 "15 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiGetValue \- Return the value of a CGI variable
+cgiSetType \- Specify the result type
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char *cgiGetValue (s_cgi **" parms ", const char *" var );
+.BI "int cgiSetType (char *" type );
 .fi
 .SH DESCRIPTION
-This routine returns a pointer to the value of a cgi variable.
-Encoded characters (%nn) are already decoded.  One must not free the
-pointer.
-
-If
-.B multiple
-fields are used (i.e. a variable that may contain several values) the
-value returned contains all these values concatenated together with a
-newline character as separator.
+This routine sets the result type to
+.IR type .
+This routine may be used optional.  Default is "text/html".  It will
+be used by
+.BR cgiHeader (3).
 
 .SH "RETURN VALUE"
-On success a pointer to a string is returned.  If the variable wasn't
-transmitted through CGI or was empty NULL is returned.
+On success 1 is returned, otherwise 0.
 
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
@@ -45,7 +40,6 @@ This CGI library is written by Martin Schulze
 please get in touch with him.
 
 .SH "SEE ALSO"
-.BR cgiGetVAriables (3),
-.BR cgiDebug (3),
 .BR cgiHeader (3),
+.BR cgiSetHeader (3),
 .BR cgiInit (3).

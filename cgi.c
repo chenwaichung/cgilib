@@ -32,10 +32,76 @@
 
 int cgiDebugLevel = 0;
 int cgiDebugStderr = 1;
+char *cgiHeaderString = NULL;
+char *cgiType = NULL;
+
+int cgiSetHeader (char *name, char *value)
+{
+    char *cp, *vp, *pivot;
+    int len;
+
+    if (!name || !strlen (name) || !value || !strlen (value))
+	return 0;
+    
+    for (cp=name;*cp && *cp!=' ' && *cp!='\n' && *cp!=':';cp++);
+    for (vp=value;*vp && *vp!='\n';vp++);
+
+    if (cgiHeaderString) {
+	len = (strlen (cgiHeaderString) + cp-name + vp-value + 4) * sizeof (char);
+	if ((cgiHeaderString = (char *)realloc (cgiHeaderString,len)) == NULL)
+	    return 0;
+	pivot = cgiHeaderString;
+	pivot += strlen (cgiHeaderString);
+	strncpy (pivot, name, cp-name);
+	pivot[cp-name] = ':';
+	pivot[cp-name+1] = ' ';
+	pivot[cp-name+2] = '\0';
+	strncat (pivot, value, vp-value);
+	pivot[cp-name+2+vp-value] = '\n';
+    } else {
+	len = (cp-name + vp-value + 4) * sizeof (char);
+	if ((cgiHeaderString = (char *)malloc (len)) == NULL)
+	    return 0;
+	strncpy (cgiHeaderString, name, cp-name);
+	cgiHeaderString[cp-name] = ':';
+	cgiHeaderString[cp-name+1] = ' ';
+	cgiHeaderString[cp-name+2] = '\0';
+	strncat (cgiHeaderString, value, vp-value);
+	cgiHeaderString[cp-name+2+vp-value] = '\n';
+    }
+    return 1;
+}
+
+int cgiSetType (char *type)
+{
+    int len;
+    char *cp;
+
+    if (!type || !strlen (type))
+	return 0;
+    if (cgiType)
+	free (cgiType);
+
+    for (cp=type;*cp && *cp!='\n';cp++);
+
+    len = (cp-type+1) * sizeof (char);
+    if ((cgiType = (char *)malloc (len+20)) == NULL)
+	return 0;
+    memset (cgiType, 0, len);
+    strncpy (cgiType, type, cp-type);
+    
+    return 1;
+}
 
 void cgiHeader ()
 {
-    printf ("Content-type: text/html\n\n");
+    if (cgiType)
+	printf ("Content-type: %s\n", cgiType);
+    else
+	printf ("Content-type: text/html\n");
+    if (cgiHeaderString)
+	printf ("%s", cgiHeaderString);
+    printf ("\n");
 }
 
 void cgiDebug (int level, int where)

@@ -1,4 +1,4 @@
-.\" cgiHeader - Write the cgi-bin header
+.\" cgiHeader - Print the HTTP header
 .\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiInit 3 "14 August 1999" "Debian GNU/Linux" "Programmer's Manual"
+.TH cgiHeader 3 "15 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiHeader \- Write the cgi-bin header
+cgiHeader \- Print the HTTP header
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
@@ -26,7 +26,12 @@ cgiHeader \- Write the cgi-bin header
 .fi
 .SH DESCRIPTION
 This routine just prints out the Contents-type: line to make the web
-server happy.
+server happy.  By default the CGI library assumes that you return
+regular HTML code and uses "text/html" as type.  If your CGI program
+returns something else, you may set the type with
+.BR cgiSetType (3).
+You may also  add additional header lines by using
+.BR cgiSetHeader (3).
 
 .SH "RETURN VALUE"
 This routine does not return a value.
@@ -38,5 +43,7 @@ please get in touch with him.
 
 .SH "SEE ALSO"
 .BR cgiDebug (3),
+.BR cgiSetHeader (3),
+.BR cgiSetType (3),
 .BR cgiInit (3),
 .BR cgiGetValue (3).

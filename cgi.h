@@ -25,9 +25,21 @@ typedef struct cgi_s {
 		*value;
 } s_cgi;
 
+/* cgiSetHeader
+ * 
+ *  Sets additional HTTP header lines to be printed with cgiHeader
+ */
+int cgiSetHeader (char *name, char *value);
+
+/* cgiSetType
+ * 
+ *  Sets result type for HTTP
+ */
+int cgiSetType (char *type);
+
 /* cgiHeader
  * 
- *  returns a valid CGI Header (Content-type...)
+ *  Prints a valid CGI Header (Content-type...) etc.
  */
 void cgiHeader ();
 

@@ -92,6 +92,11 @@ int main (int argc, char **argv, char **env)
 	if (!strcmp(path_info, "/redirect")) {
 	    cgiRedirect("http://www.infodrom.north.de/");
 	    exit (0);
+	} else if (!strcmp(path_info, "/test")) {
+	    cgiSetType ("text/tex");
+	    cgiSetHeader ("Expires", "tomorrow");
+            cgiHeader();
+	    exit (0);
 	} else if (!strcmp(path_info, "/listall")) {
             cgiHeader();
 	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");

@@ -1,4 +1,4 @@
-.\" cgiGetVariables - Returns a list of CGI variables
+.\" cgiSetHeader - Specify an additional HTTP header
 .\" Copyright (c) 1999 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
@@ -15,43 +15,38 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetVariables 3 "14 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiSetHeader 3 "15 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiGetVariables \- Returns a list of CGI variables
+cgiSetHeader \- Specify an additional HTTP header
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char **cgiGetVariables (s_cgi **" parms );
+.BI "int cgiSetHeader (char *" name ", char *" value );
 .fi
 .SH DESCRIPTION
-This routine returns a NULL terminated array of CGI variables that are
-available.  To get the value of a variable you'll have to use
-.BR cgiGetValue (3).
+With the
+.B cgiSetHeader
+routine you may specify additional HTTP header lines such as Expires:
+or Pragma:.  The order of header lines withing the HTTP header has no
+significance.  You may call this routine multiple times to set
+multiple headers.  They will be printed in the same order as
+specified, however, after the Content-type: header.
 
-You will have to free the array on your own.  You can use the
-following code fragment:
-.nf
-    char **vars;
-    int i;
-    s_cgi **cgi;
+This routine will only add the header to the internal stack, not print
+it.  They will be printed by
+.BR cgiHeader (3).
 
-    cgi = cgiInit();
-
-    vars = cgiGetVariables (cgi);
-    if (!vars)
-	return;
-
-    for (i=0; vars[i] != NULL; i++)
-        free (vars[i]);
-	
-    free (vars);
-.fi
+This routine does some syntax checking before accepting a new header.
+The
+.I name
+of a header must not contain any newline, space or colon, otherwise it
+will be truncated.  The
+.I value
+must not contain any newline, otherwise it will be truncated as well.
 
 .SH "RETURN VALUE"
-On success a NULL terminated array of strings is returned.  The last
-element is set to NULL.  If an error occurred or if no variables were
-available NULL is returned.
+On success 1 is returned, otherwise 0.
 
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
@@ -59,7 +54,5 @@ This CGI library is written by Martin Schulze
 please get in touch with him.
 
 .SH "SEE ALSO"
-.BR cgiGetValue (3),
-.BR cgiDebug (3),
 .BR cgiHeader (3),
 .BR cgiInit (3).
