@@ -15,26 +15,26 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetVariables 3 "14 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiGetVariables 3 "17 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiGetVariables \- Returns a list of CGI variables
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char **cgiGetVariables (s_cgi **" parms );
+.BI "char **cgiGetVariables (s_cgi *" parms );
 .fi
 .SH DESCRIPTION
 This routine returns a NULL terminated array of CGI variables that are
 available.  To get the value of a variable you'll have to use
 .BR cgiGetValue (3).
 
-You will have to free the array on your own.  You can use the
+You have to free the array on your own.  You can use the
 following code fragment:
 .nf
     char **vars;
     int i;
-    s_cgi **cgi;
+    s_cgi *cgi;
 
     cgi = cgiInit();
 
@@ -60,6 +60,8 @@ please get in touch with him.
 
 .SH "SEE ALSO"
 .BR cgiGetValue (3),
+.BR cgiGetCookie (3),
+.BR cgiGetCookies (3),
 .BR cgiDebug (3),
 .BR cgiHeader (3),
 .BR cgiInit (3).

@@ -1,6 +1,5 @@
 Version 0.5
 
- . Added Cookie support from Mikko Torni <mtorni@mail.freenet.hut.fi>
  . Added proper install target to main Makefile
  . Corrected multiple fields code
  . Reworked offline parser, thanks to Mikko
@@ -8,6 +7,11 @@ Version 0.5
  . Fixed problem with name being a prefix of another
  . Also decode HTTP strings for multiple fields
  . Added cgiSetType() and cgiSetHeader() with documentation
+ . Added support for HTML Cookies, new routines cgiGetCookie() and
+   cgiGetCookies(), see manpages
+ . Added cgiFree() to free internal datastructures
+ . Internal reorganization
+ . CAUTION: s_cgi **cgi is now s_cgi *cgi in programs
 
 
 

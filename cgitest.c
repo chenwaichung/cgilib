@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <cgi.h>
 
-s_cgi **cgi;
+s_cgi *cgi;
 
 #define URL "http://www.infodrom.north.de/cgilib/"
 
@@ -47,6 +47,8 @@ void print_form()
     printf ("<input type=reset value=Reset></center>\n");
     printf ("</form>\n");
     printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
+    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall\">List Everything</a><p>\n");
+    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/setcookie\">Set Cookie</a><p>\n");
 }
 
 void eval_cgi()
@@ -61,6 +63,7 @@ void listall (char **env)
 {
   char **vars;
   char *val;
+  s_cookie *cookie;
   int i;
 
   printf ("<h3>Environment Variables</h3>\n<pre>\n");
@@ -70,12 +73,25 @@ void listall (char **env)
   printf ("</pre>\n<h3>CGI Variables</h3>\n<pre>\n");
 
   vars = cgiGetVariables (cgi);
-  if (!vars)
-      return;
+  if (vars) {
+      for (i=0; vars[i] != NULL; i++) {
+	  val = cgiGetValue (cgi, vars[i]);
+	  printf ("%s=%s\n", vars[i], val?val:"");
+      }
+      for (i=0; vars[i] != NULL; i++)
+	  free (vars[i]);
+  }
 
-  for (i=0; vars[i] != NULL; i++) {
-      val = cgiGetValue (cgi, vars[i]);
-      printf ("%s=%s\n", vars[i], val?val:"");
+  printf ("</pre>\n<h3>Cookies</h3>\n<pre>\n");
+
+  vars = cgiGetCookies (cgi);
+  if (vars) {
+      for (i=0; vars[i] != NULL; i++) {
+	  cookie = cgiGetCookie (cgi, vars[i]);
+	  printf ("%s=%s\n", vars[i], cookie?cookie->value:"");
+      }
+      for (i=0; vars[i] != NULL; i++)
+	  free (vars[i]);
   }
   printf ("</pre>\n");
 }
@@ -92,11 +108,15 @@ int main (int argc, char **argv, char **env)
 	if (!strcmp(path_info, "/redirect")) {
 	    cgiRedirect("http://www.infodrom.north.de/");
 	    exit (0);
-	} else if (!strcmp(path_info, "/test")) {
-	    cgiSetType ("text/tex");
-	    cgiSetHeader ("Expires", "tomorrow");
+	} else if (!strcmp(path_info, "/setcookie")) {
+	    cgiSetHeader ("Set-Cookie", "Version=1; Library=cgilib; Path=/");
             cgiHeader();
-	    exit (0);
+	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
+	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    printf ("<h3>Cookie "Library" set</h3>\n");
+	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest\">Test</a><p>\n");
+	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
+	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall\">List Everything</a><p>\n");
 	} else if (!strcmp(path_info, "/listall")) {
             cgiHeader();
 	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");

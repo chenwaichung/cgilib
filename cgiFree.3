@@ -1,5 +1,5 @@
-.\" cgiGetValue - Return the value of a CGI variable
-.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
+.\" cgiFree - Frees the data structures
+.\" Copyright (c) 1999 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,29 +15,23 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetValue 3 "17 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiFree 3 "17 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiGetValue \- Return the value of a CGI variable
+cgiFree \- Frees the data structures
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char *cgiGetValue (s_cgi *" parms ", const char *" name );
+.BI "void cgiFree (s_cgi *" parms );
 .fi
 .SH DESCRIPTION
-This routine returns a pointer to the value of a cgi variable.
-Encoded characters (%nn) are already decoded.  One must not free the
-pointer.
+This routine only frees memory held by internal CGI datastructures.
+This is the opposite of
+.BR cgiInit (3).
 
-If
-.B multiple
-fields are used (i.e. a variable that may contain several values) the
-value returned contains all these values concatenated together with a
-newline character as separator.
-
-.SH "RETURN VALUE"
-On success a pointer to a string is returned.  If the variable wasn't
-transmitted through CGI or was empty NULL is returned.
+After this routine was called, no variables, cookies and no additional
+header lines are available.  The result type is also reset to
+"text/html".
 
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
@@ -45,9 +39,12 @@ This CGI library is written by Martin Schulze
 please get in touch with him.
 
 .SH "SEE ALSO"
-.BR cgiGetVariables (3),
-.BR cgiGetCookie (3),
-.BR cgiGetCookies (3),
+.BR cgiInit (3),
 .BR cgiDebug (3),
 .BR cgiHeader (3),
-.BR cgiInit (3).
+.BR cgiSetHeader (3),
+.BR cgiSetType (3),
+.BR cgiGetValue (3),
+.BR cgiGetVariables (3)
+.BR cgiGetCookie (3),
+.BR cgiGetCookies (3).

@@ -20,6 +20,10 @@
 /*
     Sat Aug 24 10:39:31 MET 1999: Martin Schulze <joey@infodrom.north.de>
 	Added cgiGetVariables(), corrected multiple values code
+
+    Tue Aug 17 13:13:00 CEST 1999: Martin Schulze <joey@infodrom.north.de>
+	Changed s_cgi to contain cookies as well.  Added proper support for
+	HTTP Cookies.
 */
 
 #include <stdio.h>
@@ -34,6 +38,8 @@ int cgiDebugLevel = 0;
 int cgiDebugStderr = 1;
 char *cgiHeaderString = NULL;
 char *cgiType = NULL;
+
+extern s_cookie **cgiReadCookies();
 
 int cgiSetHeader (char *name, char *value)
 {
@@ -140,18 +146,18 @@ char *cgiDecodeString (char *text)
     return text;
 }
 
-/*  cgiInit()
+/*  cgiReadVariables()
  *
  *  Read from stdin if no string is provided via CGI.  Variables that
  *  doesn't have a value associated with it doesn't get stored.
  */
-s_cgi **cgiInit ()
+s_var **cgiReadVariables ()
 {
     int length;
     char *line = NULL;
     int numargs;
     char *cp, *ip, *esp, *sptr;
-    s_cgi **result;
+    s_var **result;
     int i, k, len;
     char tmp[101];
 
@@ -233,8 +239,8 @@ s_cgi **cgiInit ()
 	    printf ("%d cgi variables found.<br>\n", numargs);
     }
 
-    len = (numargs+1) * sizeof(s_cgi *);
-    if ((result = (s_cgi **)malloc (len)) == NULL)
+    len = (numargs+1) * sizeof(s_var *);
+    if ((result = (s_var **)malloc (len)) == NULL)
 	return NULL;
     memset (result, 0, len);
 
@@ -262,7 +268,7 @@ s_cgi **cgiInit ()
 	    for (k=0; k<i && (strncmp (result[k]->name,cp, esp-cp) || !(strlen (result[k]->name) == esp-cp)); k++);
 
 	    if (k == i) {	/* No such variable yet */
-		if ((result[i] = (s_cgi *)malloc(sizeof(s_cgi))) == NULL)
+		if ((result[i] = (s_var *)malloc(sizeof(s_var))) == NULL)
 		    return NULL;
 		if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
 		    return NULL;
@@ -298,49 +304,75 @@ s_cgi **cgiInit ()
     return result;
 }
 
-char *cgiGetValue (s_cgi **parms, const char *var)
+/*  cgiInit()
+ *
+ *  Read from stdin if no string is provided via CGI.  Variables that
+ *  doesn't have a value associated with it doesn't get stored.
+ */
+s_cgi *cgiInit()
+{
+    s_cgi *res;
+    s_var **vars;
+    s_cookie **cookies;
+
+    vars = cgiReadVariables ();
+    cookies = cgiReadCookies ();
+
+    if (!vars && !cookies)
+	return NULL;
+
+    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
+	return NULL;
+    res->vars = vars;
+    res->cookies = cookies;
+
+    return res;
+}
+
+char *cgiGetValue (s_cgi *parms, const char *name)
 {
     int i;
 
-    if (parms)
-	for (i=0;parms[i]; i++)
-	    if (!strcmp(var,parms[i]->name)) {
-		if (cgiDebugLevel > 0) {
-		    if (cgiDebugStderr)
-			fprintf (stderr, "%s found as %s\n", var, parms[i]->value);
-		    else
-			printf ("%s found as %s<br>\n", var, parms[i]->value);
-		}
-		return parms[i]->value;
+    if (!parms || !parms->vars)
+	return NULL;
+    for (i=0;parms->vars[i]; i++)
+	if (!strcmp(name,parms->vars[i]->name)) {
+	    if (cgiDebugLevel > 0) {
+		if (cgiDebugStderr)
+		    fprintf (stderr, "%s found as %s\n", name, parms->vars[i]->value);
+		else
+		    printf ("%s found as %s<br>\n", name, parms->vars[i]->value);
 	    }
+	    return parms->vars[i]->value;
+	}
     if (cgiDebugLevel) {
 	if (cgiDebugStderr)
-	    fprintf (stderr, "%s not found\n", var);
+	    fprintf (stderr, "%s not found\n", name);
 	else
-	    printf ("%s not found<br>\n", var);
+	    printf ("%s not found<br>\n", name);
     }
     return NULL;
 }
 
-char **cgiGetVariables (s_cgi **parms)
+char **cgiGetVariables (s_cgi *parms)
 {
     int i;
     char **res = NULL;
     int len;
 
-    if (parms) {
-	for (i=0;parms[i]; i++);
-	len = sizeof (char *) * ++i;
-	if ((res = (char **)malloc (len)) == NULL)
+    if (!parms || !parms->vars)
+	return NULL;
+    for (i=0;parms->vars[i]; i++);
+    len = sizeof (char *) * ++i;
+    if ((res = (char **)malloc (len)) == NULL)
+	return NULL;
+    memset (res, 0, len);
+    for (i=0;parms->vars[i]; i++) {
+	len = strlen (parms->vars[i]->name) +1;
+	if ((res[i] = (char *)malloc (len)) == NULL)
 	    return NULL;
-	memset (res, 0, len);
-	for (i=0;parms[i]; i++) {
-	    len = strlen (parms[i]->name) +1;
-	    if ((res[i] = (char *)malloc (len)) == NULL)
-		return NULL;
-	    memset (res[i], 0, len);
-	    strcpy (res[i], parms[i]->name);
-	}
+	memset (res[i], 0, len);
+	strcpy (res[i], parms->vars[i]->name);
     }
     return res;
 }
@@ -352,6 +384,50 @@ void cgiRedirect (const char *url)
 	printf ("Status: 302 Temporal Relocation\n");
 	printf ("Location: %s\n\n", url);
 	printf ("<html>\n<body>\nThe page has been moved to <a href=\"%s\">%s</a>\n</body>\n</html>\n", url, url);
+    }
+}
+
+void cgiFree (s_cgi *parms)
+{
+    int i;
+
+    if (!parms)
+	return;
+    if (parms->vars) {
+	for (i=0;parms->vars[i]; i++) {
+	    if (parms->vars[i]->name)
+		free (parms->vars[i]->name);
+	    if (parms->vars[i]->value)
+		free (parms->vars[i]->value);
+	    free (parms->vars[i]);
+	}
+	free (parms->vars);
+    }
+    if (parms->cookies) {
+	if (parms->cookies[0]->version)
+	    free (parms->cookies[0]->version);
+	for (i=0;parms->cookies[i]; i++) {
+	    if (parms->cookies[i]->name)
+		free (parms->cookies[i]->name);
+	    if (parms->cookies[i]->value)
+		free (parms->cookies[i]->value);
+	    if (parms->cookies[i]->path)
+		free (parms->cookies[i]->path);
+	    if (parms->cookies[i]->domain)
+		free (parms->cookies[i]->domain);
+	    free (parms->cookies[i]);
+	}
+	free (parms->cookies);
+    }
+    free (parms);
+
+    if (cgiHeaderString) {
+	free (cgiHeaderString);
+	cgiHeaderString = NULL;
+    }
+    if (cgiType) {
+	free (cgiType);
+	cgiType = NULL;
     }
 }
 

@@ -15,20 +15,31 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiInit 3 "14 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiInit 3 "17 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiInit \- Initializes CGI library
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.B s_cgi **cgiInit ();
+.B s_cgi *cgiInit ();
 .fi
 .SH DESCRIPTION
 This routine initializes the CGI routines.  Mainly it reads in and
 decodes CGI data for later processing.  If the program is not called
 via CGI interface the user is prompted to type in CGI variable
-bindings via stdin - just like CGI.pm does.
+bindings via stdin - just like CGI.pm does.  There is no limit in the
+number of variable bindings.
+
+If HTTP Cookies are used (through the variable HTTP_COOKIE) this
+routine will parse them as well and assign them to internal variables.
+There is no limit in the number of cookies.
+
+To set a cookie you'll have to use the
+.BR cgiSetHeader (3)
+routine.  Some clients allow 4kB of Cookies while others only allow
+short ones.  Some clients may also allow only 200 Cookies for a
+certain domain/path pair.
 
 This routine normally is the first or second.  Only
 .BR cgiDebug ()
@@ -45,6 +56,10 @@ please get in touch with him.
 
 .SH "SEE ALSO"
 .BR cgiDebug (3),
+.BR cgiSetType (3),
+.BR cgiSetHeader (3),
 .BR cgiHeader (3),
 .BR cgiGetValue (3),
-.BR cgiGetVariables (3).
+.BR cgiGetVariables (3)
+.BR cgiGetCookie (3),
+.BR cgiGetCookies (3).

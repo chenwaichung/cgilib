@@ -20,9 +20,22 @@
 #ifndef _CGI_H_
 #define _CGI_H_
 
-typedef struct cgi_s {
+typedef struct var_s {
 	char	*name,
 		*value;
+} s_var;
+
+typedef struct cookie_s {
+	char	*version,
+		*name,
+		*value,
+		*path,
+		*domain;
+} s_cookie;
+
+typedef struct cgi_s {
+	s_var **vars;
+	s_cookie **cookies;
 } s_cgi;
 
 /* cgiSetHeader
@@ -53,26 +66,44 @@ void cgiDebug (int level, int where);
  *
  *  Reads in variables set via POST or stdin
  */
-s_cgi **cgiInit ();
+s_cgi *cgiInit ();
 
 /* cgiGetValue
  *
  *  Returns the value of the specified variable or NULL if it's empty
  *  or doesn't exist.
  */
-char *cgiGetValue (s_cgi **parms, const char *var);
+char *cgiGetValue (s_cgi *parms, const char *name);
 
 /* cgiGetVariables
  *
- *  Returns the value of the specified variable or NULL if it's empty
- *  or doesn't exist.
+ *  Returns the names of all form variables.
  */
-char **cgiGetVariables (s_cgi **parms);
+char **cgiGetVariables (s_cgi *parms);
 
 /* cgiRedirect
  *
  *  Provides a valid redirect for web pages.
  */
 void cgiRedirect (const char *url);
+
+/* cgiGetCookie
+ *
+ *  Returns the cookie referenced by the given name or NULL if it
+ *  doesn't exist or is empty.
+ */
+s_cookie *cgiGetCookie (s_cgi *parms, const char *name);
+
+/* cgiGetCookies
+ *
+ * Returns the name of all cookies.
+ */
+char **cgiGetCookies (s_cgi *parms);
+
+/* cgiFree
+ *
+ * Frees the internal data structures
+ */
+void cgiFree (s_cgi *parms);
 
 #endif /* _CGI_H_ */

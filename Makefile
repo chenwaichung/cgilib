@@ -18,7 +18,7 @@ CFLAGS = -I. -Wall -O2 -g
 LDFLAGS = -L.
 LIBS = -lcgi
 
-OBJS = cgi.o
+OBJS = cgi.o cookies.o
 
 libcgi.a: $(OBJS)
 	ar rc $@ $^

@@ -1,5 +1,5 @@
-.\" cgiGetValue - Return the value of a CGI variable
-.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.north.de>
+.\" cgiGetCookies - Returns a list of cookies
+.\" Copyright (c) 1999 by Martin Schulze <joey@infodrom.north.de>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,29 +15,44 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetValue 3 "17 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiGetCookies 3 "17 August 1999" "CGI Library" "Programmer's Manual"
 .SH NAME
-cgiGetValue \- Return the value of a CGI variable
+cgiGetCookies \- Returns a list of cookies
 .SH SYNOPSYS
 .nf
 .B #include <cgi.h>
 .sp
-.BI "char *cgiGetValue (s_cgi *" parms ", const char *" name );
+.BI "char **cgiGetCookies (s_cgi *" parms );
 .fi
 .SH DESCRIPTION
-This routine returns a pointer to the value of a cgi variable.
-Encoded characters (%nn) are already decoded.  One must not free the
-pointer.
+This routine returns a NULL terminated array of cookies that were
+transmitted by the client.  To get the value of a cookie you'll have
+to use
+.BR cgiGetCookie (3).
 
-If
-.B multiple
-fields are used (i.e. a variable that may contain several values) the
-value returned contains all these values concatenated together with a
-newline character as separator.
+You have to free the array on your own.  You can use the
+following code fragment:
+.nf
+    char **vars;
+    int i;
+    s_cgi *cgi;
+
+    cgi = cgiInit();
+
+    vars = cgiGetCookies (cgi);
+    if (!vars)
+	return;
+
+    for (i=0; vars[i] != NULL; i++)
+        free (vars[i]);
+	
+    free (vars);
+.fi
 
 .SH "RETURN VALUE"
-On success a pointer to a string is returned.  If the variable wasn't
-transmitted through CGI or was empty NULL is returned.
+On success a NULL terminated array of strings is returned.  The last
+element is set to NULL.  If an error occurred or if no cookies were
+available NULL is returned.
 
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
@@ -45,9 +60,9 @@ This CGI library is written by Martin Schulze
 please get in touch with him.
 
 .SH "SEE ALSO"
+.BR cgiGetValue (3),
 .BR cgiGetVariables (3),
 .BR cgiGetCookie (3),
-.BR cgiGetCookies (3),
 .BR cgiDebug (3),
 .BR cgiHeader (3),
 .BR cgiInit (3).
