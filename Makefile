@@ -38,4 +38,4 @@ install: cgitest libcgi.a
 	install -o root -g root -m 755 cgitest $(prefix)/lib/cgi-bin
 
 clean:
-	rm -f cgitest $(LOBJS)
+	rm -f cgitest cgitest.o $(LOBJS)
