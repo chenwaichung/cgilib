@@ -1,0 +1,12 @@
+Version 0.5
+
+ . Added Cookie support from Mikko Torni <mtorni@mail.freenet.hut.fi>
+ . Added proper install target to main Makefile
+
+
+
+Version 0.4
+
+ . Initial and fixed versions.
+ . For details refer to debian/changelog
+
