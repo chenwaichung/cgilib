@@ -15,17 +15,24 @@
 #   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
 
 CFLAGS = -I. -Wall -O2 -g
+LDFLAGS = -L.
+LIBS = -lcgi
 
 OBJS = cgi.o
 
 libcgi.a: $(OBJS)
 	ar rc $@ $^
 
-cgitest: cgitest.o $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+cgitest: cgitest.o libcgi.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+jumpto: jumpto.o libcgi.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+all: libcgi.a cgitest jumpto
 
 install: cgitest
 	install -m 755 cgitest /usr/lib/cgi-bin
 
 clean:
-	rm -f cgitest cgitest.o libcgi.a $(OBJS)
+	rm -f cgitest cgitest.o jumpto jumpto.o libcgi.a $(OBJS)
