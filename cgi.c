@@ -192,8 +192,9 @@ s_cgi **cgiInit ()
 
 	if (i<numargs) {
 
-	    for (k=0; k<i && (strncmp(result[k]->name,cp, esp-cp)); k++);
 	    /* try to find out if there's already such a variable */
+	    for (k=0; k<i && (strncmp (result[k]->name,cp, esp-cp) || !(strlen (result[k]->name) == esp-cp)); k++);
+
 	    if (k == i) {	/* No such variable yet */
 		if ((result[i] = (s_cgi *)malloc(sizeof(s_cgi))) == NULL)
 		    return NULL;
@@ -223,7 +224,7 @@ s_cgi **cgiInit ()
 		sprintf (sptr, "%s\n", result[k]->value);
 		strncat(sptr, cp, ip-esp);
 		free(result[k]->value);
-		result[k]->value = sptr;
+		result[k]->value = cgiDecodeString (sptr);
 	    }
 	}
 	cp = ++ip;
