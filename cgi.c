@@ -77,48 +77,61 @@ char *cgiDecodeString (char *text)
 s_cgi **cgiInit ()
 {
     int length;
-    char *line;
+    char *line = NULL;
     int numargs;
-    char *cp, *ip, *esp;
+    char *cp, *ip, *esp, *sptr;
     s_cgi **result;
-    int i;
+    int i, k;
     char tmp[101];
 
-    line = getenv("CONTENT_LENGTH");
+    cp = getenv("REQUEST_METHOD");
+    ip = getenv("CONTENT_LENGTH");
 
-    if (line){
-	length = atoi(line);
-	if ((line = (char *)malloc (length+2)) == NULL)
-	    return NULL;
-	fgets(line, length+1, stdin);
-    } else {
-	if (!getenv("REQUEST_METHOD")) {
-	    length = 0;
-	    printf ("(offline mode: enter name=value pairs on standard input)\n");
-	    for (cp = fgets(tmp, 100, stdin); cp != NULL;
-		 cp = fgets(tmp, 100, stdin) ) {
-		if (strlen(tmp)) {
-		    length += strlen(tmp);
-		    if ((ip = (char *)malloc (length * sizeof(char))) == NULL)
-			return NULL;
-		    bzero(ip, length);
-		    if (line) {
-			if (line[strlen(line)-1] == '\n')
-			    line[strlen(line)-1] = '&';
-			strcpy(ip, line);
-		    }
-		    ip = strcat(ip, tmp);
-		    if (line)
-			free (line);
-		    line = ip;
-		}
-	    } /* for */
-	    if (line[strlen(line)-1] == '\n')
-		line[strlen(line)-1] = '\0';
+    if (cp && !strcmp(cp, "POST")) {
+	if (ip) {
+	    length = atoi(ip);
+	    if ((line = (char *)malloc (length+2)) == NULL)
+		return NULL;
+	    fgets(line, length+1, stdin);
 	} else
 	    return NULL;
+    } else if (cp && !strcmp(cp, "GET")) {
+	esp = getenv("QUERY_STRING");
+	if (esp && strlen(esp)) {
+	    if ((line = (char *)malloc (strlen(esp)+2)) == NULL)
+		return NULL;
+	    sprintf (line, "%s", esp);
+	} else
+	    return NULL;
+    } else {
+	length = 0;
+	printf ("(offline mode: enter name=value pairs on standard input)\n");
+	for (cp = fgets(tmp, 100, stdin); cp != NULL;
+	     cp = fgets(tmp, 100, stdin) ) {
+	    if (strlen(tmp)) {
+		length += strlen(tmp);
+		if ((ip = (char *)malloc (length * sizeof(char))) == NULL)
+		    return NULL;
+		bzero(ip, length);
+		if (line) {
+		    if (line[strlen(line)-1] == '\n')
+			line[strlen(line)-1] = '&';
+		    strcpy(ip, line);
+		}
+		ip = strcat(ip, tmp);
+		if (line)
+		    free (line);
+		line = ip;
+	    }
+	}
+	if (line[strlen(line)-1] == '\n')
+	    line[strlen(line)-1] = '\0';
     }
-    /* line now contains all values stored like foo=bar&foobar=barfoo&foofoo= */
+
+    /*
+     *  From now on all cgi variables are stored in the variable line
+     *  and look like  foo=bar&foobar=barfoo&foofoo=
+     */
 
     if (cgiDebugLevel > 0)
 	if (cgiDebugStderr)
@@ -164,25 +177,39 @@ s_cgi **cgiInit ()
 	}
 
 	if (i<numargs) {
-	    if ((result[i] = (s_cgi *)malloc(sizeof(s_cgi))) == NULL)
-		return NULL;
-	    if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
-		return NULL;
-	    bzero (result[i]->name, esp-cp+1);
-	    strncpy(result[i]->name, cp, esp-cp);
-	    cp = ++esp;
-	    if ((result[i]->value = (char *)malloc((ip-esp+1) * sizeof(char))) == NULL)
-		return NULL;
-	    bzero (result[i]->value, ip-esp+1);
-	    strncpy(result[i]->value, cp, ip-esp);
-	    result[i]->value = cgiDecodeString(result[i]->value);
-	    if (cgiDebugLevel) {
-		if (cgiDebugStderr)
-		    fprintf (stderr, "%s: %s\n", result[i]->name, result[i]->value);
-		else
-		    printf ("<h3>Variable %s</h3>\n<pre>\n%s\n</pre>\n\n", result[i]->name, result[i]->value);
+
+	    for (k=0; k<i && (strncmp(result[k]->name,cp, esp-cp)); k++);
+	    /* try to find out if there's already such a variable */
+	    if (k == i) {	/* No such variable yet */
+		if ((result[i] = (s_cgi *)malloc(sizeof(s_cgi))) == NULL)
+		    return NULL;
+		if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
+		    return NULL;
+		bzero (result[i]->name, esp-cp+1);
+		strncpy(result[i]->name, cp, esp-cp);
+		cp = ++esp;
+		if ((result[i]->value = (char *)malloc((ip-esp+1) * sizeof(char))) == NULL)
+		    return NULL;
+		bzero (result[i]->value, ip-esp+1);
+		strncpy(result[i]->value, cp, ip-esp);
+		result[i]->value = cgiDecodeString(result[i]->value);
+		if (cgiDebugLevel) {
+		    if (cgiDebugStderr)
+			fprintf (stderr, "%s: %s\n", result[i]->name, result[i]->value);
+		    else
+			printf ("<h3>Variable %s</h3>\n<pre>\n%s\n</pre>\n\n", result[i]->name, result[i]->value);
+		}
+		i++;
+	    } else {	/* There is already such a name, suppose a mutiple field */
+		if ((sptr = (char *)malloc((strlen(result[k]->value)+(ip-esp)+2)* sizeof(char))) == NULL)
+		    return NULL;
+		bzero (sptr, strlen(result[k]->value)+(ip-esp)+2);
+		sprintf (sptr, "%s\n", result[k]->value);
+		cp = ++esp;
+		strncat(sptr, cp, ip-esp);
+		free(result[k]->value);
+		result[k]->value = sptr;
 	    }
-	    i++;
 	}
 	cp = ++ip;
     }
@@ -196,14 +223,14 @@ char *cgiGetValue(s_cgi **parms, const char *var)
     if (parms)
 	for (i=0;parms[i]; i++)
 	    if (!strcmp(var,parms[i]->name)) {
-		if (cgiDebug)
+		if (cgiDebugLevel > 0)
 		    if (cgiDebugStderr)
 			fprintf (stderr, "%s found as %s\n", var, parms[i]->value);
 		    else
 			printf ("%s found as %s<br>\n", var, parms[i]->value);
 		return parms[i]->value;
 	    }
-    if (cgiDebug)
+    if (cgiDebugLevel)
 	if (cgiDebugStderr)
 	    fprintf (stderr, "%s not found\n", var);
 	else
@@ -211,6 +238,17 @@ char *cgiGetValue(s_cgi **parms, const char *var)
 
     return NULL;
 }
+
+void cgiRedirect (const char *url)
+{
+    if (url && strlen(url)) {
+	printf ("Content-type: text/html\nContent-length: %d\n", 78+(strlen(url)*2));
+	printf ("Status: 302 Temporal Relocation\n");
+	printf ("Location: %s\n\n", url);
+	printf ("<html>\n<body>\nThe page has been moved to <a href\"%s\">%s</a>\n</body>\n</html>\n", url, url);
+    }
+}
+
 
 /*
  * Local variables:

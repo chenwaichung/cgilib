@@ -50,4 +50,10 @@ s_cgi **cgiInit ();
  */
 char *cgiGetValue(s_cgi **parms, const char *var);
 
+/* cgiRedirect
+ *
+ *  Provides a valid redirect for web pages.
+ */
+void cgiRedirect (const char *url);
+
 #endif /* _CGI_H_ */

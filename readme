@@ -7,6 +7,15 @@ And add the libcgi.a to the linker either by modifying the LDFLAGS in
 your makefiles or by adding `-lcgi' to the appropriate commandline.
 
 
+HTTP Return Codes
+
+    http://www.w3.org/Protocols/HTTP/HTRESP.html
+
+HTTP Headers
+
+    http://www.w3.org/Protocols/HTTP/Object_Headers.html
+
+
 If you have additions, questions or improvements please don't hesitate
 to contact me.
 
