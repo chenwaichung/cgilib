@@ -244,10 +244,10 @@ char *cgiGetValue(s_cgi **parms, const char *var)
 void cgiRedirect (const char *url)
 {
     if (url && strlen(url)) {
-	printf ("Content-type: text/html\nContent-length: %d\n", 78+(strlen(url)*2));
+	printf ("Content-type: text/html\nContent-length: %d\n", 77+(strlen(url)*2));
 	printf ("Status: 302 Temporal Relocation\n");
 	printf ("Location: %s\n\n", url);
-	printf ("<html>\n<body>\nThe page has been moved to <a href\"%s\">%s</a>\n</body>\n</html>\n", url, url);
+	printf ("<html>\n<body>\nThe page has been moved to <a href=\"%s\">%s</a>\n</body>\n</html>\n", url, url);
     }
 }
 
