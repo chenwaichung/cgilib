@@ -1,4 +1,4 @@
-Version 0.5, 
+Version 0.5, 1999/08/20
 
  . Added proper install target to main Makefile
  . Corrected multiple fields code
