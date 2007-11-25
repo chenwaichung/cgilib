@@ -89,7 +89,7 @@ int cgiSetType (char *type)
     if (cgiType)
 	free (cgiType);
 
-    for (cp=type;*cp && *cp!='\n';cp++);
+    for (cp=type;*cp && *cp!='\r' && *cp!='\n';cp++);
 
     len = (cp-type+1) * sizeof (char);
     if ((cgiType = (char *)malloc (len+20)) == NULL)
@@ -103,12 +103,12 @@ int cgiSetType (char *type)
 void cgiHeader ()
 {
     if (cgiType)
-	printf ("Content-type: %s\n", cgiType);
+	printf ("Content-type: %s\r\n", cgiType);
     else
-	printf ("Content-type: text/html\n");
+	printf ("Content-type: text/html\r\n");
     if (cgiHeaderString)
 	printf ("%s", cgiHeaderString);
-    printf ("\n");
+    printf ("\r\n");
 }
 
 void cgiDebug (int level, int where)
@@ -386,9 +386,9 @@ char **cgiGetVariables (s_cgi *parms)
 void cgiRedirect (const char *url)
 {
     if (url && strlen(url)) {
-	printf ("Content-type: text/html\nContent-length: %d\n", 77+(strlen(url)*2));
-	printf ("Status: 302 Temporal Relocation\n");
-	printf ("Location: %s\n\n", url);
+	printf ("Content-type: text/html\r\nContent-length: %d\r\n", 77+(strlen(url)*2));
+	printf ("Status: 302 Temporal Relocation\r\n");
+	printf ("Location: %s\r\n\r\n", url);
 	printf ("<html>\n<body>\nThe page has been moved to <a href=\"%s\">%s</a>\n</body>\n</html>\n", url, url);
     }
 }
