@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
 #include <cgi.h>
 
 int cgiDebugLevel = 0;
