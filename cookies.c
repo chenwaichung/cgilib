@@ -1,6 +1,6 @@
 /*
     cookies.c - Cookie support for CGI library
-    Copyright (C) 1999 by Martin Schulze <joey@infodrom.north.de>
+    Copyright (C) 1999 by Martin Schulze <joey@infodrom.org>
      
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
