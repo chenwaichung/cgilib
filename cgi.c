@@ -53,29 +53,25 @@ int cgiSetHeader (char *name, char *value)
 
     if (cgiHeaderString) {
 	len = (strlen (cgiHeaderString) + cp-name + vp-value + 5) * sizeof (char);
-	if ((cgiHeaderString = (char *)realloc (cgiHeaderString,len)) == NULL)
+	if ((pivot = (char *)realloc (cgiHeaderString,len)) == NULL)
 	    return 0;
-	pivot = cgiHeaderString;
+	cgiHeaderString = pivot;
 	pivot += strlen (cgiHeaderString);
-	strncpy (pivot, name, cp-name);
-	pivot[cp-name] = ':';
-	pivot[cp-name+1] = ' ';
-	pivot[cp-name+2] = '\0';
-	strncat (pivot, value, vp-value);
-	pivot[cp-name+2+vp-value] = '\r';
-	pivot[cp-name+2+vp-value+1] = '\n';
     } else {
 	len = (cp-name + vp-value + 5) * sizeof (char);
 	if ((cgiHeaderString = (char *)malloc (len)) == NULL)
 	    return 0;
-	strncpy (cgiHeaderString, name, cp-name);
-	cgiHeaderString[cp-name] = ':';
-	cgiHeaderString[cp-name+1] = ' ';
-	cgiHeaderString[cp-name+2] = '\0';
-	strncat (cgiHeaderString, value, vp-value);
-	cgiHeaderString[cp-name+2+vp-value] = '\r';
-	cgiHeaderString[cp-name+2+vp-value+1] = '\n';
+	pivot = cgiHeaderString;
     }
+
+    strncpy (pivot, name, cp-name);
+    pivot[cp-name] = ':';
+    pivot[cp-name+1] = ' ';
+    pivot[cp-name+2] = '\0';
+    strncat (pivot, value, vp-value);
+    pivot[cp-name+2+vp-value] = '\r';
+    pivot[cp-name+2+vp-value+1] = '\n';
+
     return 1;
 }
 
