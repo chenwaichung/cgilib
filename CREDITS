@@ -8,3 +8,7 @@ Mikko Torni <mtorni@mail.freenet.hut.fi>
 
 	- Cookie support (abandoned though)
 	- Bugfixes and improvements
+
+Laszlo Zavaleta <wry@kopu.org>
+
+	-- Support for ';' as delimiter
