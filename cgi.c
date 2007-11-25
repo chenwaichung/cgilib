@@ -1,6 +1,6 @@
 /*
     cgi.c - Some simple routines for CGI programming
-    Copyright (c) 1996-9  Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1996-9,2007  Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,15 +16,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
  */
-
-/*
-    Sat Aug 24 10:39:31 MET 1999: Martin Schulze <joey@infodrom.org>
-	Added cgiGetVariables(), corrected multiple values code
-
-    Tue Aug 17 13:13:00 CEST 1999: Martin Schulze <joey@infodrom.org>
-	Changed s_cgi to contain cookies as well.  Added proper support for
-	HTTP Cookies.
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
