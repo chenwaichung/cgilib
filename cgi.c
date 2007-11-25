@@ -345,7 +345,10 @@ char *cgiGetValue (s_cgi *parms, const char *name)
 		else
 		    printf ("%s found as %s<br>\n", name, parms->vars[i]->value);
 	    }
-	    return parms->vars[i]->value;
+	    if (strlen(parms->vars[i]->value) > 0)
+		return parms->vars[i]->value;
+	    else
+		return NULL;
 	}
     if (cgiDebugLevel) {
 	if (cgiDebugStderr)
