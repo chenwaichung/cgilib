@@ -1,5 +1,5 @@
 .\" cgi - Common Gateway Interface
-.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.org>
+.\" Copyright (c) 1998,9,2007 by Martin Schulze <joey@infodrom.org>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ The email address of the user issuing the information request.  This
 is not supported by most browsers.
 .TP
 .B HTTP_REFERER
-Reflects the URL from which tis CGI program was accessed.
+Reflects the URL from which this CGI program was accessed.
 .TP
 .B HTTP_USER_AGENT
 The name, version and libraries of the browser making the request.
@@ -63,18 +63,18 @@ graphics and is able to display frames and tables.
 .TP
 .B PATH_INFO
 This shows extra information that was passed to the CGI program via
-command line.  Normally it's empty or non-existant.
+command line.  Normally it's empty or non-existent.
 .TP
 .B PATH_TRANSLATED
 The translated path on the local filesystem.
 .TP
 .B QUERY_STRING
 This variable refers to additional arguments that were appended to the
-CGI programm - normally with the '?' sign.
+CGI program - normally with the '?' sign.
 .TP
 .B REMOTE_ADDR
 This refers to the host from which the information request was issued,
-as ip number.
+as IP number.
 .TP
 .B REMOTE_HOST
 This refers to the host from which the information request was issued.
@@ -90,7 +90,7 @@ issued.  Normally this is either GET or POST.
 The virtual name of the script being executed.
 .TP
 .B SERVER_NAME
-The server's hostname or ip number.  This may be used to determine the
+The server's hostname or IP number.  This may be used to determine the
 correct paths or resulting HTML code for CGI programs that are used on
 the same machine for several servers.
 .TP
