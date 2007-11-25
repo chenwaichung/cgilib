@@ -48,7 +48,7 @@ void print_form()
     printf ("<input type=reset value=Reset></center>\n");
     printf ("</form>\n");
     printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
-    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall\">List Everything</a><p>\n");
+    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall?var=value&var2=val2;var3=val3\">List Everything</a><p>\n");
     printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/setcookie\">Set Cookie</a><p>\n");
 }
 
