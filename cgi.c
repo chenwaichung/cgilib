@@ -229,7 +229,7 @@ s_var **cgiReadVariables ()
 
     if (strlen(line)) {
 	for (numargs=1,cp=line; *cp; cp++)
-	    if (*cp == '&') numargs++;
+	    if (*cp == '&' || *cp == ';' ) numargs++;
     } else
 	numargs = 0;
     if (cgiDebugLevel > 0) {
@@ -249,7 +249,9 @@ s_var **cgiReadVariables ()
     while (*cp) {
 	if ((ip = (char *)strchr(cp, '&')) != NULL) {
 	    *ip = '\0';
-	}else
+	} else if ((ip = (char *)strchr(cp, ';')) != NULL) {
+	    *ip = '\0';
+	} else
 	    ip = cp + strlen(cp);
 
 	if ((esp=(char *)strchr(cp, '=')) == NULL) {
