@@ -1,6 +1,6 @@
 /*
-    cgi.h - Some simple routines for cgi programming
-    Copyright (c) 1996-8  Martin Schulze <joey@infodrom.org>
+    cgi.h - Routines for CGI programming
+    Copyright (c) 1996-8,2007  Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -111,5 +111,11 @@ void cgiFreeList (char **list);
  * Frees the internal data structures
  */
 void cgiFree (s_cgi *parms);
+
+/* cgiEscape
+ *
+ * Escapes <&> in a string
+ */
+char *cgiEscape (char *string);
 
 #endif /* _CGI_H_ */
