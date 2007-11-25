@@ -1,6 +1,6 @@
 /*
     cgitest.c - Testprogram for cgi.o
-    Copyright (c) 1998,9,1007 by Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1998,9,2007 by Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 s_cgi *cgi;
 
-#define URL "http://www.infodrom.north.de/cgilib/"
+#define URL "http://www.infodrom.org/projects/cgilib/"
 
 void print_form()
 {
@@ -129,7 +129,7 @@ int main (int argc, char **argv, char **env)
     path_info = getenv("PATH_INFO");
     if (path_info) {
 	if (!strcmp(path_info, "/redirect")) {
-	    cgiRedirect("http://www.infodrom.north.de/");
+	    cgiRedirect("http://www.infodrom.org/");
 	    exit (0);
 	} else if (!strcmp(path_info, "/setcookie")) {
 	    cgiSetHeader ("Set-Cookie", "Version=1; Library=cgilib; Path=/");
