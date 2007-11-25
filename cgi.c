@@ -63,14 +63,10 @@ int cgiSetHeader (char *name, char *value)
 	    return 0;
 	pivot = cgiHeaderString;
     }
-
     strncpy (pivot, name, cp-name);
-    pivot[cp-name] = ':';
-    pivot[cp-name+1] = ' ';
-    pivot[cp-name+2] = '\0';
+    strncat (pivot, ": ", 2);
     strncat (pivot, value, vp-value);
-    pivot[cp-name+2+vp-value] = '\r';
-    pivot[cp-name+2+vp-value+1] = '\n';
+    strncat (pivot, "\r\n", 2);
 
     return 1;
 }
