@@ -1,6 +1,6 @@
 /*
     cgitest.c - Testprogram for cgi.o
-    Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1998,9,1007 by Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -64,12 +64,18 @@ void listall (char **env)
 {
   char **vars;
   char *val;
+  char *tmp;
   s_cookie *cookie;
   int i;
 
   printf ("<h3>Environment Variables</h3>\n<pre>\n");
-  for (i=0; env[i]; i++)
-    printf ("%s\n", env[i]);
+  for (i=0; env[i]; i++) {
+      tmp = cgiEscape (env[i]);
+      if (tmp) {
+	  printf ("%s\n", tmp);
+	  free (tmp);
+      }
+  }
   
   printf ("</pre>\n<h3>CGI Variables</h3>\n<pre>\n");
 
@@ -77,7 +83,15 @@ void listall (char **env)
   if (vars) {
       for (i=0; vars[i] != NULL; i++) {
 	  val = cgiGetValue (cgi, vars[i]);
-	  printf ("%s=%s\n", vars[i], val?val:"");
+	  if (val) {
+	      tmp = cgiEscape (val);
+	      if (tmp) {
+		  printf ("%s=%s\n", vars[i], tmp);
+		  free (tmp);
+	      } else
+		  printf ("%s=...\n", vars[i]);
+	  } else
+	      printf ("%s=\n", vars[i]);
       }
       for (i=0; vars[i] != NULL; i++)
 	  free (vars[i]);
@@ -89,7 +103,15 @@ void listall (char **env)
   if (vars) {
       for (i=0; vars[i] != NULL; i++) {
 	  cookie = cgiGetCookie (cgi, vars[i]);
-	  printf ("%s=%s\n", vars[i], cookie?cookie->value:"");
+	  if (cookie) {
+	      tmp = cgiEscape (cookie->value);
+	      if (tmp) {
+		  printf ("%s=%s\n", vars[i], tmp);
+		  free (tmp);
+	      } else
+		  printf ("%s=...\n", vars[i]);
+	  } else
+	      printf ("%s=\n", vars[i]);
       }
       for (i=0; vars[i] != NULL; i++)
 	  free (vars[i]);
