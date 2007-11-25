@@ -48,11 +48,11 @@ int cgiSetHeader (char *name, char *value)
     if (!name || !strlen (name) || !value || !strlen (value))
 	return 0;
     
-    for (cp=name;*cp && *cp!=' ' && *cp!='\n' && *cp!=':';cp++);
-    for (vp=value;*vp && *vp!='\n';vp++);
+    for (cp=name;*cp && *cp!=' ' && *cp!='\r' && *cp!='\n' && *cp!=':';cp++);
+    for (vp=value;*vp && *vp!='\r' && *vp!='\n';vp++);
 
     if (cgiHeaderString) {
-	len = (strlen (cgiHeaderString) + cp-name + vp-value + 4) * sizeof (char);
+	len = (strlen (cgiHeaderString) + cp-name + vp-value + 5) * sizeof (char);
 	if ((cgiHeaderString = (char *)realloc (cgiHeaderString,len)) == NULL)
 	    return 0;
 	pivot = cgiHeaderString;
@@ -62,9 +62,10 @@ int cgiSetHeader (char *name, char *value)
 	pivot[cp-name+1] = ' ';
 	pivot[cp-name+2] = '\0';
 	strncat (pivot, value, vp-value);
-	pivot[cp-name+2+vp-value] = '\n';
+	pivot[cp-name+2+vp-value] = '\r';
+	pivot[cp-name+2+vp-value+1] = '\n';
     } else {
-	len = (cp-name + vp-value + 4) * sizeof (char);
+	len = (cp-name + vp-value + 5) * sizeof (char);
 	if ((cgiHeaderString = (char *)malloc (len)) == NULL)
 	    return 0;
 	strncpy (cgiHeaderString, name, cp-name);
@@ -72,7 +73,8 @@ int cgiSetHeader (char *name, char *value)
 	cgiHeaderString[cp-name+1] = ' ';
 	cgiHeaderString[cp-name+2] = '\0';
 	strncat (cgiHeaderString, value, vp-value);
-	cgiHeaderString[cp-name+2+vp-value] = '\n';
+	cgiHeaderString[cp-name+2+vp-value] = '\r';
+	cgiHeaderString[cp-name+2+vp-value+1] = '\n';
     }
     return 1;
 }
