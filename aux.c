@@ -19,6 +19,12 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <syslog.h>
+
+int cgiDebugLevel = 0;
+int cgiDebugType = 1;
 
 char *cgiEscape (char *string)
 {
@@ -76,6 +82,32 @@ char *cgiEscape (char *string)
     *np = '\0';
 
     return buf;
+}
+
+void cgiDebugOutput (int level, char *format, ...)
+{
+  va_list args;
+
+  if (level <= cgiDebugLevel) {
+
+      va_start (args, format);
+
+      switch (cgiDebugType) {
+      case 0:
+	  printf ("<pre>\n");
+	  vprintf (format, args);
+	  printf ("\n</pre>\n");
+	  break;
+      case 1:
+	  vfprintf (stderr, format, args);
+	  break;
+      case 2:
+	  vsyslog (LOG_DEBUG, format, args);
+	  break;
+      }
+
+      va_end (args);
+  }
 }
 
 /*

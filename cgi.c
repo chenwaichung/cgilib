@@ -23,9 +23,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <cgi.h>
+#include "aux.h"
 
-int cgiDebugLevel = 0;
-int cgiDebugStderr = 1;
 char *cgiHeaderString = NULL;
 char *cgiType = NULL;
 
@@ -100,10 +99,12 @@ void cgiDebug (int level, int where)
 	cgiDebugLevel = level;
     else
 	cgiDebugLevel = 0;
-    if (where)
-	cgiDebugStderr = 0;
-    else
-	cgiDebugStderr = 1;
+    if (where > 0) {
+	if (where < 3)
+	    cgiDebugType = where;
+	else
+	    cgiDebugType = 0;
+    }
 }
 
 char *cgiDecodeString (char *text)
@@ -200,12 +201,7 @@ s_var **cgiReadVariables ()
      *  and look like  foo=bar&foobar=barfoo&foofoo=
      */
 
-    if (cgiDebugLevel > 0) {
-	if (cgiDebugStderr)
-	    fprintf (stderr, "Received cgi input: %s\n", line);
-	else
-	    printf ("<b>Received cgi input</b><br>\n<pre>\n--\n%s\n--\n</pre>\n\n", line);
-    }
+    cgiDebugOutput (1, "Received cgi input: %s\n", line);
 
     for (cp=line; *cp; cp++)
 	if (*cp == '+')
@@ -216,12 +212,7 @@ s_var **cgiReadVariables ()
 	    if (*cp == '&' || *cp == ';' ) numargs++;
     } else
 	numargs = 0;
-    if (cgiDebugLevel > 0) {
-	if (cgiDebugStderr)
-	    fprintf (stderr, "%d cgi variables found.\n", numargs);
-	else
-	    printf ("%d cgi variables found.<br>\n", numargs);
-    }
+    cgiDebugOutput (1, "%d cgi variables found.\n", numargs);
 
     len = (numargs+1) * sizeof(s_var *);
     if ((result = (s_var **)malloc (len)) == NULL)
@@ -266,12 +257,7 @@ s_var **cgiReadVariables ()
 		memset (result[i]->value, 0, ip-esp+1);
 		strncpy(result[i]->value, cp, ip-esp);
 		result[i]->value = cgiDecodeString(result[i]->value);
-		if (cgiDebugLevel) {
-		    if (cgiDebugStderr)
-			fprintf (stderr, "%s: %s\n", result[i]->name, result[i]->value);
-		    else
-			printf ("<h3>Variable %s</h3>\n<pre>\n%s\n</pre>\n\n", result[i]->name, result[i]->value);
-		}
+		cgiDebugOutput (1, "%s: %s\n", result[i]->name, result[i]->value);
 		i++;
 	    } else {	/* There is already such a name, suppose a mutiple field */
 		cp = ++esp;
@@ -323,23 +309,13 @@ char *cgiGetValue (s_cgi *parms, const char *name)
 	return NULL;
     for (i=0;parms->vars[i]; i++)
 	if (!strcmp(name,parms->vars[i]->name)) {
-	    if (cgiDebugLevel > 0) {
-		if (cgiDebugStderr)
-		    fprintf (stderr, "%s found as %s\n", name, parms->vars[i]->value);
-		else
-		    printf ("%s found as %s<br>\n", name, parms->vars[i]->value);
-	    }
+	    cgiDebugOutput (1, "%s found as %s\n", name, parms->vars[i]->value);
 	    if (strlen(parms->vars[i]->value) > 0)
 		return parms->vars[i]->value;
 	    else
 		return NULL;
 	}
-    if (cgiDebugLevel) {
-	if (cgiDebugStderr)
-	    fprintf (stderr, "%s not found\n", name);
-	else
-	    printf ("%s not found<br>\n", name);
-    }
+    cgiDebugOutput (1, "%s not found\n", name);
     return NULL;
 }
 

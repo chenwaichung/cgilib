@@ -1,6 +1,6 @@
 /*
     cookies.c - Cookie support for CGI library
-    Copyright (C) 1999 by Martin Schulze <joey@infodrom.org>
+    Copyright (C) 1999,2007 by Martin Schulze <joey@infodrom.org>
      
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cgi.h>
-
-extern int cgiDebugLevel, cgiDebugStderr;
+#include "aux.h"
 
 s_cookie **cgiReadCookies()
 {
@@ -129,20 +128,10 @@ s_cookie *cgiGetCookie (s_cgi *parms, const char *name)
 	return NULL;
     for (i=0;parms->cookies[i]; i++)
 	if (parms->cookies[i]->name && parms->cookies[i]->value && !strcmp(name,parms->cookies[i]->name)) {
-	    if (cgiDebugLevel > 0) {
-		if (cgiDebugStderr)
-		    fprintf (stderr, "%s found as %s\n", name, parms->cookies[i]->value);
-		else
-		    printf ("%s found as %s<br>\n", name, parms->cookies[i]->value);
-	    }
+	    cgiDebugOutput (1, "%s found as %s\n", name, parms->cookies[i]->value);
 	    return parms->cookies[i];
 	}
-    if (cgiDebugLevel) {
-	if (cgiDebugStderr)
-	    fprintf (stderr, "%s not found\n", name);
-	else
-	    printf ("%s not found<br>\n", name);
-    }
+    cgiDebugOutput (1, "%s not found\n", name);
     return NULL;
 }
 
