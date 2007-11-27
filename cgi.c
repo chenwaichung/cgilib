@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <syslog.h>
 #include <cgi.h>
 #include "aux.h"
 
