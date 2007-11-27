@@ -100,9 +100,11 @@ void cgiDebug (int level, int where)
     else
 	cgiDebugLevel = 0;
     if (where > 0) {
-	if (where < 3)
+	if (where < 3) {
 	    cgiDebugType = where;
-	else
+	    if (where == 2)
+		openlog("cgilib", LOG_PID, LOG_USER);
+	} else
 	    cgiDebugType = 0;
     }
 }
