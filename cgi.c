@@ -155,6 +155,8 @@ s_var **cgiReadVariables ()
     if (cp && !strcmp(cp, "POST")) {
 	if (ip) {
 	    length = atoi(ip);
+	    if (length <= 0)
+		return NULL;
 	    if ((line = (char *)malloc (length+2)) == NULL)
 		return NULL;
 	    fgets(line, length+1, stdin);
