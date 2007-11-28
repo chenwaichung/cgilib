@@ -206,7 +206,7 @@ s_var **cgiReadVariables ()
      *  and look like  foo=bar&foobar=barfoo&foofoo=
      */
 
-    cgiDebugOutput (1, "Received cgi input: %s\n", line);
+    cgiDebugOutput (1, "Received cgi input: %s", line);
 
     for (cp=line; *cp; cp++)
 	if (*cp == '+')
@@ -217,7 +217,7 @@ s_var **cgiReadVariables ()
 	    if (*cp == '&' || *cp == ';' ) numargs++;
     } else
 	numargs = 0;
-    cgiDebugOutput (1, "%d cgi variables found.\n", numargs);
+    cgiDebugOutput (1, "%d cgi variables found.", numargs);
 
     len = (numargs+1) * sizeof(s_var *);
     if ((result = (s_var **)malloc (len)) == NULL)
@@ -262,7 +262,7 @@ s_var **cgiReadVariables ()
 		memset (result[i]->value, 0, ip-esp+1);
 		strncpy(result[i]->value, cp, ip-esp);
 		result[i]->value = cgiDecodeString(result[i]->value);
-		cgiDebugOutput (1, "%s: %s\n", result[i]->name, result[i]->value);
+		cgiDebugOutput (1, "%s: %s", result[i]->name, result[i]->value);
 		i++;
 	    } else {	/* There is already such a name, suppose a mutiple field */
 		cp = ++esp;
@@ -314,13 +314,13 @@ char *cgiGetValue (s_cgi *parms, const char *name)
 	return NULL;
     for (i=0;parms->vars[i]; i++)
 	if (!strcmp(name,parms->vars[i]->name)) {
-	    cgiDebugOutput (1, "%s found as %s\n", name, parms->vars[i]->value);
+	    cgiDebugOutput (1, "%s found as %s", name, parms->vars[i]->value);
 	    if (strlen(parms->vars[i]->value) > 0)
 		return parms->vars[i]->value;
 	    else
 		return NULL;
 	}
-    cgiDebugOutput (1, "%s not found\n", name);
+    cgiDebugOutput (1, "%s not found", name);
     return NULL;
 }
 
