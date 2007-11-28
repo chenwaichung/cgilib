@@ -100,6 +100,7 @@ void cgiDebugOutput (int level, char *format, ...)
 	  break;
       case 1:
 	  vfprintf (stderr, format, args);
+	  printf ("\n");
 	  break;
       case 2:
 	  vsyslog (LOG_DEBUG, format, args);
