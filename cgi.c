@@ -17,10 +17,13 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111, USA.
  */
 
+#define _GNU_SOURCE 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <syslog.h>
 #include <cgi.h>
@@ -134,6 +137,118 @@ char *cgiDecodeString (char *text)
     return text;
 }
 
+/* cgiReadMultipart()
+ *
+ * Decode multipart/form-data
+ */
+#define MULTIPART_DELTA 5
+s_var **cgiReadMultipart (char *boundary)
+{
+    char *line;
+    char *cp, *xp;
+    char *name = NULL, *type = NULL;
+    int header = 1;
+    s_var **result = NULL;
+    s_var **tmp;
+    int numresults = 0, current = 0;
+    int index = 0;
+    size_t len;
+    
+    while ((line = cgiGetLine (stdin)) != NULL) {
+
+	if (!strncmp (line, boundary, strlen(boundary))) {
+	    header = 1;
+	} else if (!strncasecmp (line, "Content-Disposition: form-data; ", 32)) {
+	    if (!name) {
+		if ((cp = strstr (line, "name=\"")) == NULL)
+		    continue;
+		cp += 6;
+		if ((xp = strchr (cp, '\"')) == NULL)
+		    continue;
+		name = strndup (cp, xp-cp);
+		cgiDebugOutput (2, "Found field name %s", name);
+	    }
+	} else if (!strncasecmp (line, "Content-Type: ", 14)) {
+	    if (!type) {
+		cp = line + 14;
+		type = strdup (cp);
+		cgiDebugOutput (2, "Found mime type %s", type);
+	    }
+	} else if (header) {
+	    if (!strlen(line))
+		header = 0;
+	} else {
+	    cgiDebugOutput (2, "Found data: %s", line);
+	    if (name) {
+
+		/* try to find out if there's already such a variable */
+		for (index=0; index<current && strcmp (result[index]->name,name); index++);
+
+		if (index == current) {
+		    if (!result) {
+			len = MULTIPART_DELTA * sizeof (s_var *);
+			if ((result = (s_var **)malloc (len)) == NULL)
+			    return NULL;
+			numresults = MULTIPART_DELTA;
+			memset (result, 0, len);
+			current = 0;
+		    } else {
+			if (current+2 > numresults) {
+			    len = (numresults + MULTIPART_DELTA) * sizeof(s_var *);
+			    if ((tmp = (s_var **)realloc (result, len)) == NULL) {
+				for (index=0; result[index]; index++)
+				    free (result[index]);
+				free (result);
+				free (name);
+				return NULL;
+			    }
+			    result = tmp;
+			    memset (result + numresults*sizeof(s_var *), 0, len - numresults*sizeof(s_var *));
+			    numresults += MULTIPART_DELTA;
+			}
+		    }
+		    if ((result[current] = (s_var *)malloc(sizeof(s_var))) == NULL) {
+			for (index=0; result[index]; index++)
+			    free (result[index]);
+			free (result);
+			free (name);
+			return NULL;
+		    }
+		    current++;
+		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
+		    result[index]->name = name; name = NULL;
+		    result[index]->value = strdup (line);
+		} else {
+		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
+		    free (name);
+		    if ((name = (char *)realloc (result[index]->value, strlen(result[index]->value)+strlen(line)+2)) != NULL) {
+			strcat(name, "\n");
+			strcat(name, line);
+			result[index]->value = name;
+			name = NULL;
+		    }
+		}
+	    } else {
+		if (index > 0) {
+		    if ((name = (char *)malloc (strlen(result[index]->value)+strlen(line)+3)) == NULL) {
+			for (index=0; result[index]; index++)
+			    free (result[index]);
+			free (result);
+			return NULL;
+		    }
+		    sprintf (name, "%s\r\n%s", result[index]->value, line);
+		    free (result[index]->value);
+		    result[index]->value = name;
+		    name = NULL;
+		}
+	    }
+	}
+
+    }
+
+    return result;
+}
+
 /*  cgiReadVariables()
  *
  *  Read from stdin if no string is provided via CGI.  Variables that
@@ -149,7 +264,16 @@ s_var **cgiReadVariables ()
     int i, k, len;
     char tmp[101];
 
+    cp = getenv("CONTENT_TYPE");
+    cgiDebugOutput (2, "Content-Type: %s", cp);
+    if (cp && strstr(cp, "multipart/form-data") && strstr(cp, "boundary=")) {
+	cp = strstr(cp, "boundary=") + strlen ("boundary=") - 2;
+	*cp = *(cp+1) = '-';
+	return cgiReadMultipart (cp);
+    }
+
     cp = getenv("REQUEST_METHOD");
+    cgiDebugOutput (2, "REQUEST_METHOD: %s", cp);
     ip = getenv("CONTENT_LENGTH");
 
     if (cp && !strcmp(cp, "POST")) {
@@ -206,7 +330,7 @@ s_var **cgiReadVariables ()
      *  and look like  foo=bar&foobar=barfoo&foofoo=
      */
 
-    cgiDebugOutput (1, "Received cgi input: %s", line);
+    cgiDebugOutput (1, "Received CGI input: %s", line);
 
     for (cp=line; *cp; cp++)
 	if (*cp == '+')
