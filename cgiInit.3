@@ -1,5 +1,5 @@
 .\" cgiInit - Initializes CGI library
-.\" Copyright (c) 1998,9 by Martin Schulze <joey@infodrom.org>
+.\" Copyright (c) 1998,9,2007 by Martin Schulze <joey@infodrom.org>
 .\" 
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiInit 3 "17 August 1999" "CGI Library" "Programmer's Manual"
+.TH cgiInit 3 "29 November 2007" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiInit \- Initializes CGI library
 .SH SYNOPSYS
@@ -41,10 +41,14 @@ routine.  Some clients allow 4kB of Cookies while others only allow
 short ones.  Some clients may also allow only 200 Cookies for a
 certain domain/path pair.
 
-This routine normally is the first or second.  Only
+This routine normally is the first or second that is called from this
+library.  Only
 .BR cgiDebug ()
 may be called before.  If debugging is enabled this routine produces
 some additional output.
+
+The library supports both the regular GET and POST methods as well as
+multipart/form-data.
 .SH "RETURN VALUE"
 On success a set of CGI variable bindings is returned that is needed
 for later processing.  If an error occurs NULL is returned.
@@ -62,4 +66,5 @@ please get in touch with him.
 .BR cgiGetValue (3),
 .BR cgiGetVariables (3)
 .BR cgiGetCookie (3),
-.BR cgiGetCookies (3).
+.BR cgiGetCookies (3),
+.BR cgi (5).
