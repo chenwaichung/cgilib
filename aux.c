@@ -143,7 +143,7 @@ char *cgiGetLine (FILE *stream)
 	line[strlen(line)-1] = '\0';
 	if (line[strlen(line)-1] == '\r')
 	  line[strlen(line)-1] = '\0';
-	cgiDebugOutput (2, "Read line '%s'", line);
+	cgiDebugOutput (4, "Read line '%s'", line);
 	return line;
       }
     }
