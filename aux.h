@@ -23,3 +23,5 @@ extern int cgiDebugType;
 char *cgiEscape (char *string);
 
 void cgiDebugOutput (int level, char *format, ...);
+
+char *cgiGetLine (FILE *stream);

@@ -111,6 +111,46 @@ void cgiDebugOutput (int level, char *format, ...)
   }
 }
 
+#define BUFSIZE 128
+
+char *cgiGetLine (FILE *stream)
+{
+    static char *line = NULL;
+    static size_t size = 0;
+    char buf[BUFSIZE];
+    char *cp;
+
+    if (!line) {
+      if ((line = (char *)malloc (BUFSIZE)) == NULL)
+	return NULL;
+      size = BUFSIZE;
+    }
+    line[0] = '\0';
+
+    while (!feof (stream)) {
+      if ((cp = fgets (buf, sizeof (buf), stream)) == NULL)
+	return NULL;
+
+      if (strlen(line)+strlen(buf)+1 > size) {
+	if ((cp = (char *)realloc (line, size + BUFSIZE)) == NULL)
+	  return line;
+	size += BUFSIZE;
+	line = cp;
+      }
+
+      strcat (line, buf);
+      if (line[strlen(line)-1] == '\n') {
+	line[strlen(line)-1] = '\0';
+	if (line[strlen(line)-1] == '\r')
+	  line[strlen(line)-1] = '\0';
+	cgiDebugOutput (2, "Read line '%s'", line);
+	return line;
+      }
+    }
+
+    return NULL;
+}
+
 /*
  * Local variables:
  *  c-indent-level: 4
