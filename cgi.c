@@ -232,13 +232,15 @@ s_cgi *cgiReadMultipart (char *boundary)
 		} else {
 		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
 		    free (name);
-		    if ((name = (char *)realloc (result[index]->value, strlen(result[index]->value)+strlen(line)+2)) != NULL) {
-			strcat(name, "\n");
-			strcat(name, line);
-			result[index]->value = name;
-			if (type)
+		    name = NULL;
+		    if ((cp = (char *)realloc (result[index]->value, strlen(result[index]->value)+strlen(line)+2)) != NULL) {
+			strcat(cp, "\n");
+			strcat(cp, line);
+			result[index]->value = cp;
+			if (type) {
 			    free (type);
-			name = type = NULL;
+			    type = NULL;
+			}
 		    }
 		}
 	    } else {
