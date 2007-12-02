@@ -188,8 +188,11 @@ s_cgi *cgiReadMultipart (char *boundary)
 		if (index == current) {
 		    if (!result) {
 			len = MULTIPART_DELTA * sizeof (s_var *);
-			if ((result = (s_var **)malloc (len)) == NULL)
+			if ((result = (s_var **)malloc (len)) == NULL) {
+			    if (type)
+				free (type);
 			    return NULL;
+			}
 			numresults = MULTIPART_DELTA;
 			memset (result, 0, len);
 			current = 0;
@@ -201,6 +204,8 @@ s_cgi *cgiReadMultipart (char *boundary)
 				    free (result[index]);
 				free (result);
 				free (name);
+				if (type)
+				    free (type);
 				return NULL;
 			    }
 			    result = tmp;
@@ -213,12 +218,18 @@ s_cgi *cgiReadMultipart (char *boundary)
 			    free (result[index]);
 			free (result);
 			free (name);
+			if (type)
+			    free (type);
 			return NULL;
 		    }
 		    current++;
 		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
 		    result[index]->name = name; name = NULL;
 		    result[index]->value = strdup (line);
+		    if (type) {
+			free (type);
+			type = NULL;
+		    }
 		} else {
 		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
 		    free (name);
@@ -226,7 +237,9 @@ s_cgi *cgiReadMultipart (char *boundary)
 			strcat(name, "\n");
 			strcat(name, line);
 			result[index]->value = name;
-			name = NULL;
+			if (type)
+			    free (type);
+			name = type = NULL;
 		    }
 		}
 	    } else {
