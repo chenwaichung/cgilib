@@ -204,7 +204,7 @@ s_cgi *cgiReadMultipart (char *boundary)
 				return NULL;
 			    }
 			    result = tmp;
-			    memset (result + numresults*sizeof(s_var *), 0, len - numresults*sizeof(s_var *));
+			    memset (result + numresults, 0, len - numresults*sizeof(s_var *));
 			    numresults += MULTIPART_DELTA;
 			}
 		    }
