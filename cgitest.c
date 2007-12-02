@@ -95,7 +95,8 @@ void listall (char **env)
       }
       for (i=0; vars[i] != NULL; i++)
 	  free (vars[i]);
-  }
+  } else
+      printf ("No variables transmitted.\n");
 
   printf ("</pre>\n<h3>Cookies</h3>\n<pre>\n");
 
@@ -115,7 +116,9 @@ void listall (char **env)
       }
       for (i=0; vars[i] != NULL; i++)
 	  free (vars[i]);
-  }
+  } else
+      printf ("No cookies transmitted.\n");
+
   printf ("</pre>\n");
 }
 
