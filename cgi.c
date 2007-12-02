@@ -142,7 +142,7 @@ char *cgiDecodeString (char *text)
  * Decode multipart/form-data
  */
 #define MULTIPART_DELTA 5
-s_var **cgiReadMultipart (char *boundary)
+s_cgi *cgiReadMultipart (char *boundary)
 {
     char *line;
     char *cp, *xp;
@@ -153,6 +153,7 @@ s_var **cgiReadMultipart (char *boundary)
     int numresults = 0, current = 0;
     int index = 0;
     size_t len;
+    s_cgi *res;
     
     while ((line = cgiGetLine (stdin)) != NULL) {
 
@@ -246,7 +247,14 @@ s_var **cgiReadMultipart (char *boundary)
 
     }
 
-    return result;
+    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
+       return NULL;
+
+    res->vars = result;
+    res->cookies = NULL;
+    res->files = NULL;
+
+    return res;
 }
 
 /*  cgiReadVariables()
@@ -254,7 +262,7 @@ s_var **cgiReadMultipart (char *boundary)
  *  Read from stdin if no string is provided via CGI.  Variables that
  *  doesn't have a value associated with it doesn't get stored.
  */
-s_var **cgiReadVariables ()
+s_cgi *cgiReadVariables ()
 {
     int length;
     char *line = NULL;
@@ -263,6 +271,7 @@ s_var **cgiReadVariables ()
     s_var **result;
     int i, k, len;
     char tmp[101];
+    s_cgi *res;
 
     cp = getenv("CONTENT_TYPE");
     cgiDebugOutput (2, "Content-Type: %s", cp);
@@ -402,7 +411,15 @@ s_var **cgiReadVariables ()
 	}
 	cp = ++ip;
     }
-    return result;
+
+    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
+	return NULL;
+
+    res->vars = result;
+    res->cookies = NULL;
+    res->files = NULL;
+
+    return res;
 }
 
 /*  cgiInit()
@@ -413,19 +430,14 @@ s_var **cgiReadVariables ()
 s_cgi *cgiInit()
 {
     s_cgi *res;
-    s_var **vars;
-    s_cookie **cookies;
 
-    vars = cgiReadVariables ();
-    cookies = cgiReadCookies ();
+    res = cgiReadVariables ();
+    res->cookies = cgiReadCookies ();
 
-    if (!vars && !cookies)
+    if (!res->vars && !res->cookies && !res->files) {
+	free (res);
 	return NULL;
-
-    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
-	return NULL;
-    res->vars = vars;
-    res->cookies = cookies;
+    }
 
     return res;
 }
