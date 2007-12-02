@@ -188,6 +188,7 @@ s_cgi *cgiReadMultipart (char *boundary)
 		    if (!result) {
 			len = MULTIPART_DELTA * sizeof (s_var *);
 			if ((result = (s_var **)malloc (len)) == NULL) {
+			    free (name);
 			    if (type)
 				free (type);
 			    return NULL;
