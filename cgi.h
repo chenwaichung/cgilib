@@ -33,9 +33,17 @@ typedef struct cookie_s {
 		*domain;
 } s_cookie;
 
+typedef struct file_s {
+	char	*name,
+		*type,
+		*filename,
+		*tmpfile;
+} s_file;
+
 typedef struct cgi_s {
 	s_var **vars;
 	s_cookie **cookies;
+	s_file **files;
 } s_cgi;
 
 /* cgiSetHeader
