@@ -137,6 +137,95 @@ char *cgiDecodeString (char *text)
     return text;
 }
 
+/* cgiReadFile()
+ *
+ * Read and save a file fro a multipart request
+ */
+#include <errno.h>
+char *cgiReadFile (FILE *stream, char *boundary)
+{
+    char *crlfboundary, *buf;
+    size_t boundarylen;
+    int c;
+    unsigned int pivot;
+    char *cp;
+    char template[]= "/tmp/cgilibXXXXXX";
+    FILE *tmpfile;
+    int fd;
+
+    boundarylen = strlen(boundary)+3;
+    if ((crlfboundary = (char *)malloc (boundarylen)) == NULL)
+	return NULL;
+    sprintf (crlfboundary, "\r\n%s", boundary);
+
+    if ((buf = (char *)malloc (boundarylen)) == NULL) {
+	free (crlfboundary);
+	return NULL;
+    }
+    memset (buf, 0, boundarylen);
+    pivot = 0;
+
+    if ((fd = mkstemp (template)) == -1) {
+	free (crlfboundary);
+	free (buf);
+	return NULL;
+    }
+
+    if ((tmpfile = fdopen (fd, "w")) == NULL) {
+	free (crlfboundary);
+	free (buf);
+	unlink (template);
+	return NULL;
+    }
+    
+    while (!feof (stream)) {
+	c = fgetc (stream);
+
+	if (c == 0) {
+	    if (strlen (buf)) {
+		for (cp=buf; *cp; cp++)
+		    putc (*cp, tmpfile);
+		memset (buf, 0, boundarylen);
+		pivot = 0;
+	    }
+	    putc (c, tmpfile);
+	    continue;
+	}
+
+	if (strlen (buf)) {
+	    if (crlfboundary[pivot+1] == c) {
+		buf[++pivot] = c;
+
+		if (strlen (buf) == strlen (crlfboundary))
+		    break;
+		else
+		    continue;
+	    } else {
+		for (cp=buf; *cp; cp++)
+                    putc (*cp, tmpfile);
+                memset (buf, 0, boundarylen);
+                pivot = 0;
+	    }
+	}
+
+	if (crlfboundary[0] == c) {
+	    buf[0] = c;
+	} else {
+	    fputc (c, tmpfile);
+	}
+    }
+
+    if (!feof (stream))
+	fgets (buf, boundarylen, stream);
+
+    fclose (tmpfile);
+
+    free (crlfboundary);
+    free (buf);
+
+    return strdup (template);
+}
+
 /* cgiReadMultipart()
  *
  * Decode multipart/form-data
@@ -147,10 +236,15 @@ s_cgi *cgiReadMultipart (char *boundary)
     char *line;
     char *cp, *xp;
     char *name = NULL, *type = NULL;
+    char *fname = NULL;
+    char *tmpfile;
     int header = 1;
     s_var **result = NULL;
     s_var **tmp;
     int numresults = 0, current = 0;
+    s_file **files = NULL;
+    s_file **tmpf;
+    s_file *file;
     int index = 0;
     size_t len;
     s_cgi *res;
@@ -168,6 +262,15 @@ s_cgi *cgiReadMultipart (char *boundary)
 		    continue;
 		name = strndup (cp, xp-cp);
 		cgiDebugOutput (2, "Found field name %s", name);
+
+		if ((cp = strstr (line, "filename=\"")) == NULL)
+		    continue;
+		cp += 10;
+		if ((xp = strchr (cp, '\"')) == NULL)
+		    continue;
+		fname = strndup (cp, xp-cp);
+		cgiDebugOutput (2, "Found filename %s", fname);
+		/* TODO: filename */
 	    }
 	} else if (!strncasecmp (line, "Content-Type: ", 14)) {
 	    if (!type) {
@@ -176,8 +279,94 @@ s_cgi *cgiReadMultipart (char *boundary)
 		cgiDebugOutput (2, "Found mime type %s", type);
 	    }
 	} else if (header) {
-	    if (!strlen(line))
+	    if (!strlen(line)) {
 		header = 0;
+
+		if (fname) {
+		    header = 1;
+		    tmpfile = cgiReadFile (stdin, boundary);
+
+		    if (!tmpfile) {
+			free (name);
+			free (fname);
+			if (type)
+			    free (type);
+			name = fname = type = NULL;
+		    }
+
+		    cgiDebugOutput (2, "Wrote %s (%s) to file: %s", name, fname, tmpfile);
+
+		    if (!strlen (fname)) {
+			cgiDebugOutput (3, "Found empty filename, removing");
+			unlink (tmpfile);
+			free (tmpfile);
+			free (name);
+			free (fname);
+			if (type)
+			    free (type);
+			name = fname = type = NULL;
+		    } else {
+			if ((file = (s_file *)malloc (sizeof (s_file))) == NULL) {
+			    cgiDebugOutput (3, "malloc failed, ignoring %s=%s", name, fname);
+			    unlink (tmpfile);
+			    free (tmpfile);
+			    free (name);
+			    free (fname);
+			    if (type)
+				free (type);
+			    name = fname = type = NULL;
+			    continue;
+			}
+
+			file->name = name;
+			file->type = type;
+			file->tmpfile = tmpfile;
+			if ((cp = rindex (fname, '/')) == NULL)
+			    file->filename = fname;
+			else {
+			    file->filename = strdup (++cp);
+			    free (fname);
+			}
+			name = type = fname = NULL;
+
+			if (!files) {
+			    if ((files = (s_file **)malloc(2*sizeof (s_file *))) == NULL) {
+				cgiDebugOutput (3, "malloc failed, ignoring %s=%s", name, fname);
+				unlink (tmpfile);
+				free (tmpfile);
+				free (name);
+				name = NULL;
+				if (type) {
+				    free (type);
+				    type = NULL;
+				}
+				free (file->filename);
+				free (file);
+				continue;
+			    }
+			    memset (files, 0, 2*sizeof (s_file *));
+			    index = 0;
+			} else {
+			    for (index=0; files[index]; index++);
+			    if ((tmpf = (s_file **)realloc(files, (index+2)*sizeof (s_file *))) == NULL) {
+				cgiDebugOutput (3, "realloc failed, ignoring %s=%s", name, fname);
+				unlink (tmpfile);
+				free (tmpfile);
+				free (name);
+				if (type)
+				    free (type);
+				free (file->filename);
+				free (file);
+				name = type = fname = NULL;
+				continue;
+			    }
+			    files = tmpf;
+			    memset (files + index, 0, 2*sizeof (s_file *));
+			}
+			files[index] = file;
+		    }
+		}
+	    }
 	} else {
 	    if (name) {
 
@@ -259,15 +448,14 @@ s_cgi *cgiReadMultipart (char *boundary)
 		}
 	    }
 	}
-
     }
 
     if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
-       return NULL;
+	return NULL;
 
     res->vars = result;
     res->cookies = NULL;
-    res->files = NULL;
+    res->files = files;
 
     return res;
 }
