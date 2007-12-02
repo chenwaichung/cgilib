@@ -179,7 +179,6 @@ s_cgi *cgiReadMultipart (char *boundary)
 	    if (!strlen(line))
 		header = 0;
 	} else {
-	    cgiDebugOutput (2, "Found data: %s", line);
 	    if (name) {
 
 		/* try to find out if there's already such a variable */
