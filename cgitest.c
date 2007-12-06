@@ -93,8 +93,7 @@ void listall (char **env)
 	  } else
 	      printf ("%s=\n", vars[i]);
       }
-      for (i=0; vars[i] != NULL; i++)
-	  free (vars[i]);
+      cgiFreeList (vars);
   } else
       printf ("No variables transmitted.\n");
 
@@ -114,8 +113,7 @@ void listall (char **env)
 	  } else
 	      printf ("%s=\n", vars[i]);
       }
-      for (i=0; vars[i] != NULL; i++)
-	  free (vars[i]);
+      cgiFreeList (vars);
   } else
       printf ("No cookies transmitted.\n");
 
