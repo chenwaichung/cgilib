@@ -702,7 +702,7 @@ void cgiFreeList (char **list)
 
     for (i=0; list[i] != NULL; i++)
 	free (list[i]);
-	free (list);
+    free (list);
 }
 
 void cgiFree (s_cgi *parms)
