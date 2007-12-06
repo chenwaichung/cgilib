@@ -484,6 +484,9 @@ s_cgi *cgiReadVariables ()
 	return cgiReadMultipart (cp);
     }
 
+    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
+	return NULL;
+
     cp = getenv("REQUEST_METHOD");
     cgiDebugOutput (2, "REQUEST_METHOD: %s", cp);
     ip = getenv("CONTENT_LENGTH");
@@ -615,9 +618,6 @@ s_cgi *cgiReadVariables ()
 	cp = ++ip;
     }
 
-    if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
-	return NULL;
-
     res->vars = result;
     res->cookies = NULL;
     res->files = NULL;
@@ -635,7 +635,10 @@ s_cgi *cgiInit()
     s_cgi *res;
 
     res = cgiReadVariables ();
-    res->cookies = cgiReadCookies ();
+    if (res)
+	res->cookies = cgiReadCookies ();
+    else
+	return NULL;
 
     if (!res->vars && !res->cookies && !res->files) {
 	free (res);
