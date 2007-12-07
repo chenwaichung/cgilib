@@ -165,6 +165,7 @@ int main (int argc, char **argv, char **env)
     }
 
     printf ("\n<hr>\n</body>\n</html>\n");
+    cgiFree (cgi);
     return 0;
 }
 
