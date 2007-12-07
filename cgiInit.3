@@ -49,6 +49,10 @@ some additional output.
 
 The library supports both the regular GET and POST methods as well as
 multipart/form-data.
+
+Memory allocated by this library is freed with the
+.BR cgiFree (3)
+function.
 .SH "RETURN VALUE"
 On success a set of CGI variable bindings is returned that is needed
 for later processing.  If an error occurs NULL is returned.
@@ -67,4 +71,5 @@ please get in touch with him.
 .BR cgiGetVariables (3)
 .BR cgiGetCookie (3),
 .BR cgiGetCookies (3),
+.BR cgiFree (3),
 .BR cgi (5).
