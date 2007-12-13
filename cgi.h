@@ -104,9 +104,21 @@ s_cookie *cgiGetCookie (s_cgi *parms, const char *name);
 
 /* cgiGetCookies
  *
- * Returns a list of name of all cookies.
+ * Returns a list of names of all cookies.
  */
 char **cgiGetCookies (s_cgi *parms);
+
+/* cgiGetFiles
+ *
+ * Returns a list of names of all files.
+ */
+char **cgiGetFiles (s_cgi *parms);
+
+/* cgiGetFile
+ *
+ * Return data structure for CGI file variable
+ */
+s_file *cgiGetFile (s_cgi *parms, const char *name);
 
 /* cgiFreeList
  *

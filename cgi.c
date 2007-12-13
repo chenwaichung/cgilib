@@ -477,7 +477,8 @@ s_cgi *cgiReadVariables ()
     s_cgi *res;
 
     cp = getenv("CONTENT_TYPE");
-    cgiDebugOutput (2, "Content-Type: %s", cp);
+    if (cp)
+	cgiDebugOutput (2, "Content-Type: %s", cp);
     if (cp && strstr(cp, "multipart/form-data") && strstr(cp, "boundary=")) {
 	cp = strstr(cp, "boundary=") + strlen ("boundary=") - 2;
 	*cp = *(cp+1) = '-';
@@ -488,8 +489,11 @@ s_cgi *cgiReadVariables ()
 	return NULL;
 
     cp = getenv("REQUEST_METHOD");
-    cgiDebugOutput (2, "REQUEST_METHOD: %s", cp);
+    if (cp)
+	cgiDebugOutput (2, "REQUEST_METHOD: %s", cp);
     ip = getenv("CONTENT_LENGTH");
+    if (ip)
+	cgiDebugOutput (2, "CONTENT_LENGTH: %s", ip);
 
     if (cp && !strcmp(cp, "POST")) {
 	if (ip) {
@@ -689,6 +693,54 @@ char **cgiGetVariables (s_cgi *parms)
     return res;
 }
 
+/* cgiGetFiles
+ *
+ * Returns a list of names of all files.
+ */
+char **cgiGetFiles (s_cgi *parms)
+{
+    int i;
+    char **res = NULL;
+    int len;
+
+    if (!parms || !parms->files)
+	return NULL;
+
+    for (i=0;parms->files[i]; i++);
+    len = sizeof (char *) * ++i;
+    if ((res = (char **)malloc (len)) == NULL)
+	return NULL;
+    memset (res, 0, len);
+    for (i=0;parms->files[i]; i++) {
+	len = strlen (parms->files[i]->name) +1;
+	if ((res[i] = (char *)malloc (len)) == NULL)
+	    return NULL;
+	memset (res[i], 0, len);
+	strcpy (res[i], parms->files[i]->name);
+    }
+    return res;
+}
+
+/* cgiGetFile
+ *
+ * Return data structure for CGI file variable
+ */
+s_file *cgiGetFile (s_cgi *parms, const char *name)
+{
+    int i;
+
+    if (!parms || !parms->files)
+	return NULL;
+
+    for (i=0;parms->files[i]; i++)
+	if (!strcmp(name,parms->files[i]->name)) {
+	    cgiDebugOutput (1, "%s found as %s", name, parms->files[i]->filename);
+	    return parms->files[i];
+	}
+    cgiDebugOutput (1, "%s not found", name);
+    return NULL;
+}
+
 void cgiRedirect (const char *url)
 {
     if (url && strlen(url)) {
@@ -739,6 +791,20 @@ void cgiFree (s_cgi *parms)
 	    free (parms->cookies[i]);
 	}
 	free (parms->cookies);
+    }
+    if (parms->files) {
+	for (i=0;parms->files[i]; i++) {
+	    if (parms->files[i]->name)
+		free (parms->files[i]->name);
+	    if (parms->files[i]->type)
+		free (parms->files[i]->type);
+	    if (parms->files[i]->filename)
+		free (parms->files[i]->filename);
+	    if (parms->files[i]->tmpfile)
+		free (parms->files[i]->tmpfile);
+	    free (parms->files[i]);
+	}
+	free (parms->files);
     }
     free (parms);
 
