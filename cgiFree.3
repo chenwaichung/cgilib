@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiFree 3 "7 December 2007" "CGI Library" "Programmer's Manual"
+.TH cgiFree 3 "13 December 2007" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiFree \- Frees CGI data structure
 .SH SYNOPSYS
@@ -26,10 +26,11 @@ cgiFree \- Frees CGI data structure
 .fi
 .SH DESCRIPTION
 This routine frees memory allocated by CGI parsing routines.
+Temporary files from CGI file upload are also removed.
 This is the opposite of
 .BR cgiInit (3).
 
-After this routine was called, no variables, cookies and no additional
+After this routine was called, no variables, cookies, files and no additional
 header lines are available.  The result type is also reset to
 "text/html".
 
