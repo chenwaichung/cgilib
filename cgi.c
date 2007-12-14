@@ -270,7 +270,6 @@ s_cgi *cgiReadMultipart (char *boundary)
 		    continue;
 		fname = strndup (cp, xp-cp);
 		cgiDebugOutput (2, "Found filename %s", fname);
-		/* TODO: filename */
 	    }
 	} else if (!strncasecmp (line, "Content-Type: ", 14)) {
 	    if (!type) {
@@ -800,8 +799,10 @@ void cgiFree (s_cgi *parms)
 		free (parms->files[i]->type);
 	    if (parms->files[i]->filename)
 		free (parms->files[i]->filename);
-	    if (parms->files[i]->tmpfile)
+	    if (parms->files[i]->tmpfile) {
+		unlink (parms->files[i]->tmpfile);
 		free (parms->files[i]->tmpfile);
+	    }
 	    free (parms->files[i]);
 	}
 	free (parms->files);
