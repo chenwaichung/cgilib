@@ -11,4 +11,8 @@ Mikko Torni <mtorni@mail.freenet.hut.fi>
 
 Laszlo Zavaleta <wry@kopu.org>
 
-	-- Support for ';' as delimiter
+	- Support for ';' as delimiter
+
+Stephen Uitti <suitti@olde.com>
+
+	- Spelling corrections
