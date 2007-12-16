@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetValue 3 "13 December 2007" "CGI Library" "Programmer's Manual"
+.TH cgiGetValue 3 "16 December 2007" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiGetFile \- Return information of a CGI file variable
 .SH SYNOPSYS
@@ -42,17 +42,19 @@ typedef struct file_s {
 } s_file;
 .fi
 .RE
+
+Memory allocated by this data structure is automatically freed by the
+final call to
+.BR cgiFree (3).
 .SH "RETURN VALUE"
 On success a pointer to the
 .I s_file
 datastructure is returned.  If the variable wasn't transmitted or the
 through CGI or if the filename was empty NULL is returned.
-
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
 <joey@infodrom.org>.  If you have additions or improvements
 please get in touch with him.
-
 .SH "SEE ALSO"
 .BR cgiGetFiles (3),
 .BR cgiGetVariables (3),
