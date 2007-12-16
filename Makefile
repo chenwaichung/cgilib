@@ -17,7 +17,7 @@
 CFLAGS = -Wall -O2 -g
 IFLAGS = -I.
 LDFLAGS = -L.
-LIBS = -lcgi
+#LIBS = -lcgi
 
 OBJS = cgi.o cookies.o aux.o
 
