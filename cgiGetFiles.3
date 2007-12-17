@@ -15,7 +15,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc.,59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.TH cgiGetFiles 3 "5 December 2007" "CGI Library" "Programmer's Manual"
+.TH cgiGetFiles 3 "17 December 2007" "CGI Library" "Programmer's Manual"
 .SH NAME
 cgiGetFiles \- Returns a list of CGI file variables
 .SH SYNOPSYS
@@ -29,19 +29,16 @@ This routine returns a NULL terminated array of names of CGI file
 variables that are available.  Details are provided with the
 .BR cgiGetFile (3)
 function.
-To free the memory allocated use
+To free the memory allocated for the array use
 .BR cgiFreeList (3).
-
 .SH "RETURN VALUE"
 On success a NULL terminated array of strings is returned.  The last
 element is set to NULL.  If an error occurred or if no files variables
 are available NULL is returned.
-
 .SH "AUTHOR"
 This CGI library is written by Martin Schulze
 <joey@infodrom.org>.  If you have additions or improvements
 please get in touch with him.
-
 .SH "SEE ALSO"
 .BR cgiGetFile (3),
 .BR cgiGetCookies (3),
