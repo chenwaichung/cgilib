@@ -26,38 +26,91 @@
 #include <string.h>
 #include <cgi.h>
 
-s_cgi *cgi;
+#define HTML_CSS "<style type=\"text/css\">\n\
+body { background-color: #f7f7f7; }\n\
+.formbox { border: 1px solid black; background: #dedede; padding: 2px; margin: 5px; }\n\
+</style>\n"
 
-#define URL "http://www.infodrom.org/projects/cgilib/"
+#define HTML_HEAD "<html>\n<head><title>cgilib</title></head>\n<body>\n"
+#define HTML_FOOT "<hr><a href=\"http://www.infodrom.org/projects/cgilib/\">cgilib</a>\n</body></html>"
+
+#define HTML_FORMCONTENT "<table>\
+<tr><td valign=\"top\">Input</td><td><input name=string size=50></td></tr>\n\
+<tr><td valign=\"top\">Select</td><td><select name=select multiple>\n\
+<option>Nr. 1\n<option>Nr. 2\n<option>Nr. 3\n<option>Nr. 4\n</select></td></tr>\n\
+<tr><td valign=\"top\">Radio</td><td><input type=\"radio\" name=\"radio\" value=\"yes\"> yes \
+<input type=\"radio\" name=\"radio\" value=\"no\"> no</td></tr>\n\
+<tr><td valign=\"top\">Text</td><td><textarea name=text cols=50>\n</textarea></td></tr>\n"
+
+#define HTML_SUBMIT "</table><center><input type=submit value=Submit> <input type=reset value=Reset></center>\n"
+
+s_cgi *cgi;
 
 void print_form()
 {
-    printf ("<h1>Test-Form</h1>\n");
+    printf ("<h1>Test-Forms</h1>\n");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>GET, display selected</b><br>\n");
+    printf ("<form action=\"/cgi-bin/cgitest/insertdata\" method=GET>\n");
+    printf (HTML_FORMCONTENT HTML_SUBMIT);
+    printf ("</form>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>POST, display selected</b><br>\n");
     printf ("<form action=\"/cgi-bin/cgitest/insertdata\" method=post>\n");
-    printf ("Input: <input name=string size=50>\n<br>");
-    printf ("<select name=select multiple>\n<option>Nr. 1\n<option>Nr. 2\n<option>Nr. 3\n<option>Nr. 4\n</select>\n");
-    printf ("Text: <textarea name=text cols=50>\n</textarea>\n");
-    printf ("<center><input type=submit value=Submit> ");
-    printf ("<input type=reset value=Reset></center>\n");
+    printf (HTML_FORMCONTENT HTML_SUBMIT);
     printf ("</form>\n");
-    printf ("<hr width=50%%><form action=\"/cgi-bin/cgitest/listall\" method=post>\n");
-    printf ("Input: <input name=string size=50>\n<br>");
-    printf ("<select name=select multiple>\n<option>Nr. 1\n<option>Nr. 2\n<option>Nr. 3\n<option>Nr. 4\n</select>\n");
-    printf ("Text: <textarea name=text cols=50>\n</textarea>\n");
-    printf ("<center><input type=submit value=Show> ");
-    printf ("<input type=reset value=Reset></center>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>POST, multipart, display selected</b><br>\n");
+    printf ("<form action=\"/cgi-bin/cgitest/insertdata\" method=POST enctype=\"multipart/form-data\">\n");
+    printf (HTML_FORMCONTENT HTML_SUBMIT);
     printf ("</form>\n");
-    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
-    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall?var=value&var2=val2;var3=val3\">List Everything</a><p>\n");
-    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/setcookie\">Set Cookie</a><p>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>GET, display everything</b><br>\n");
+    printf ("<form action=\"/cgi-bin/cgitest/listall\" method=GET>\n");
+    printf (HTML_FORMCONTENT HTML_SUBMIT);
+    printf ("</form>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>POST, display everything</b><br>\n");
+    printf ("<form action=\"/cgi-bin/cgitest/listall\" method=POST>\n");
+    printf (HTML_FORMCONTENT HTML_SUBMIT);
+    printf ("</form>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>POST, multipart, display everything</b><br>\n");
+    printf ("<form action=\"/cgi-bin/cgitest/listall\" method=post enctype=\"multipart/form-data\">\n");
+    printf (HTML_FORMCONTENT);
+    printf ("<tr><td>File</td><td><input name=file type=file></td></tr>");
+    printf (HTML_SUBMIT);
+    printf ("</form>\n");
+    printf ("</div>");
+
+    printf ("<div class=\"formbox\">");
+    printf ("<b>Misc</b>\n");
+    printf ("<br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a>\n");
+    printf ("<br><a href=\"/cgi-bin/cgitest/listall?var=value&var2=val2;var3=val3\">List Everything</a>\n");
+    printf ("<br><a href=\"/cgi-bin/cgitest/setcookie\">Set Cookie</a>\n");
+    printf ("</div>");
 }
 
 void eval_cgi()
 {
     printf ("<h1>Results</h1>\n\n");
+    printf ("<div class=\"formbox\">");
     printf ("<b>string</b>: %s<p>\n", cgiGetValue(cgi, "string"));
+    printf ("<b>radio</b>: %s<p>\n", cgiGetValue(cgi, "radio"));
     printf ("<b>text</b>: %s<p>\n", cgiGetValue(cgi, "text"));
     printf ("<b>select</b>: %s<p>\n", cgiGetValue(cgi, "select"));
+    printf ("</div>");
 }
 
 void listall (char **env)
@@ -66,6 +119,7 @@ void listall (char **env)
   char *val;
   char *tmp;
   s_cookie *cookie;
+  s_file *file;
   int i;
 
   printf ("<h3>Environment Variables</h3>\n<pre>\n");
@@ -117,6 +171,28 @@ void listall (char **env)
   } else
       printf ("No cookies transmitted.\n");
 
+  printf ("</pre>\n<h3>Files</h3>\n<pre>\n");
+
+  vars = cgiGetFiles (cgi);
+  if (vars) {
+      for (i=0; vars[i] != NULL; i++) {
+	  file = cgiGetFile (cgi, vars[i]);
+	  if (file) {
+	      tmp = cgiEscape (file->filename);
+	      printf ("%s=%s (%s", vars[i], tmp, file->tmpfile);
+	      free (tmp);
+	      if (file->type) {
+		  tmp = cgiEscape (file->type);
+		  printf (", %s)\n", tmp);
+		  free (tmp);
+	      } else
+		  printf (")\n");
+	  }
+      }
+      cgiFreeList (vars);
+  } else
+      printf ("No files transmitted.\n");
+
   printf ("</pre>\n");
 }
 
@@ -135,21 +211,18 @@ int main (int argc, char **argv, char **env)
 	} else if (!strcmp(path_info, "/setcookie")) {
 	    cgiSetHeader ("Set-Cookie", "Version=1; Library=cgilib; Path=/");
             cgiHeader();
-	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
-	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    printf (HTML_CSS HTML_HEAD);
 	    printf ("<h3>Cookie Library set</h3>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest\">Test</a><p>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/redirect\">Redirect</a><p>\n");
 	    printf ("<p><br><p><br><a href=\"/cgi-bin/cgitest/listall\">List Everything</a><p>\n");
 	} else if (!strcmp(path_info, "/listall")) {
             cgiHeader();
-	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
-	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    printf (HTML_CSS HTML_HEAD);
 	    listall (env);
 	} else {
 	    cgiHeader();
-	    printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
-	    printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	    printf (HTML_CSS HTML_HEAD);
 	    if (strlen (path_info))
 		printf ("path_info: %s<br>\n", path_info);
 	    if (!strcmp(path_info, "/insertdata")) {
@@ -159,12 +232,11 @@ int main (int argc, char **argv, char **env)
 	}
     } else {
 	cgiHeader();
-	printf ("<html>\n<head><title>cgilib</title></title>\n\n<body bgcolor=\"#ffffff\">\n");
-	printf ("<h1><a href=\"%s\">cgilib</a></h1>\n", URL);
+	printf (HTML_CSS HTML_HEAD);
 	print_form();
     }
 
-    printf ("\n<hr>\n</body>\n</html>\n");
+    printf (HTML_FOOT);
     cgiFree (cgi);
     return 0;
 }
