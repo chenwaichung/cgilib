@@ -54,13 +54,13 @@ typedef struct cgi_s {
  * 
  *  Sets additional HTTP header lines to be printed with cgiHeader
  */
-int cgiSetHeader (char *name, char *value);
+int cgiSetHeader (const char *name, const char *value);
 
 /* cgiSetType
  * 
  *  Sets result type for HTTP
  */
-int cgiSetType (char *type);
+int cgiSetType (const char *type);
 
 /* cgiHeader
  * 

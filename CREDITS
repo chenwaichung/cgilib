@@ -16,3 +16,7 @@ Laszlo Zavaleta <wry@kopu.org>
 Stephen Uitti <suitti@olde.com>
 
 	- Spelling corrections
+
+Neil Spring <nspring@zarathustra.saavie.org>
+
+	- Declare some arguments const

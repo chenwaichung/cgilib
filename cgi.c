@@ -1,6 +1,6 @@
 /*
     cgi.c - Some simple routines for CGI programming
-    Copyright (c) 1996-9,2007  Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1996-9,2007,8  Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@ char *cgiType = NULL;
 
 extern s_cookie **cgiReadCookies();
 
-int cgiSetHeader (char *name, char *value)
+int cgiSetHeader (const char *name, const char *value)
 {
-    char *cp, *vp, *pivot;
+    const char *cp, *vp;
+    char *pivot;
     int len;
 
     if (!name || !strlen (name) || !value || !strlen (value))
@@ -65,10 +66,10 @@ int cgiSetHeader (char *name, char *value)
     return 1;
 }
 
-int cgiSetType (char *type)
+int cgiSetType (const char *type)
 {
     int len;
-    char *cp;
+    const char *cp;
 
     if (!type || !strlen (type))
 	return 0;
