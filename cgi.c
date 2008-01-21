@@ -262,6 +262,7 @@ s_cgi *cgiReadMultipart (char *boundary)
 		if ((xp = strchr (cp, '\"')) == NULL)
 		    continue;
 		name = strndup (cp, xp-cp);
+		cgiDecodeString (name);
 		cgiDebugOutput (2, "Found field name %s", name);
 
 		if ((cp = strstr (line, "filename=\"")) == NULL)
@@ -270,6 +271,7 @@ s_cgi *cgiReadMultipart (char *boundary)
 		if ((xp = strchr (cp, '\"')) == NULL)
 		    continue;
 		fname = strndup (cp, xp-cp);
+		cgiDecodeString (fname);
 		cgiDebugOutput (2, "Found filename %s", fname);
 	    }
 	} else if (!strncasecmp (line, "Content-Type: ", 14)) {
@@ -415,6 +417,7 @@ s_cgi *cgiReadMultipart (char *boundary)
 		    cgiDebugOutput (3, "Set #%d to %s=%s", index, name, line);
 		    result[index]->name = name; name = NULL;
 		    result[index]->value = strdup (line);
+		    cgiDecodeString (result[index]->value);
 		    if (type) {
 			free (type);
 			type = NULL;
@@ -435,16 +438,21 @@ s_cgi *cgiReadMultipart (char *boundary)
 		}
 	    } else {
 		if (index > 0) {
-		    if ((name = (char *)malloc (strlen(result[index]->value)+strlen(line)+3)) == NULL) {
+		    xp = strdup (line);
+		    cgiDecodeString (xp);
+
+		    if ((name = (char *)malloc (strlen(result[index]->value)+strlen(xp)+3)) == NULL) {
 			for (index=0; result[index]; index++)
 			    free (result[index]);
 			free (result);
+			free (xp);
 			return NULL;
 		    }
-		    sprintf (name, "%s\r\n%s", result[index]->value, line);
+		    sprintf (name, "%s\r\n%s", result[index]->value, xp);
 		    free (result[index]->value);
 		    result[index]->value = name;
 		    name = NULL;
+		    free (xp);
 		}
 	    }
 	}
@@ -588,35 +596,48 @@ s_cgi *cgiReadVariables ()
 	}
 
 	if (i<numargs) {
+	    char *name;
+	    char *value;
+
+	    if ((name = (char *)malloc((esp-cp+1) * sizeof (char))) == NULL)
+		return NULL;
+	    strncpy(name, cp, esp-cp);
+	    name[esp-cp] = '\0';
+	    cgiDecodeString (name);
+
+	    cp = ++esp;
+
+	    if ((value = (char *)malloc((ip-esp+1) * sizeof (char))) == NULL) {
+		free (name);
+		return NULL;
+	    }
+	    strncpy(value, cp, ip-esp);
+	    value[ip-esp] = '\0';
+	    cgiDecodeString (value);
 
 	    /* try to find out if there's already such a variable */
-	    for (k=0; k<i && (strncmp (result[k]->name,cp, esp-cp) || !(strlen (result[k]->name) == esp-cp)); k++);
+	    for (k=0; k<i && strcmp (result[k]->name, name); k++);
 
 	    if (k == i) {	/* No such variable yet */
 		if ((result[i] = (s_var *)malloc(sizeof(s_var))) == NULL)
 		    return NULL;
-		if ((result[i]->name = (char *)malloc((esp-cp+1) * sizeof(char))) == NULL)
-		    return NULL;
-		memset (result[i]->name, 0, esp-cp+1);
-		strncpy(result[i]->name, cp, esp-cp);
-		cp = ++esp;
-		if ((result[i]->value = (char *)malloc((ip-esp+1) * sizeof(char))) == NULL)
-		    return NULL;
-		memset (result[i]->value, 0, ip-esp+1);
-		strncpy(result[i]->value, cp, ip-esp);
-		result[i]->value = cgiDecodeString(result[i]->value);
+		result[i]->name = name;
+		result[i]->value = value;
 		cgiDebugOutput (1, "%s: %s", result[i]->name, result[i]->value);
 		i++;
 	    } else {	/* There is already such a name, suppose a mutiple field */
-		cp = ++esp;
-		len = (strlen(result[k]->value)+(ip-esp)+2) * sizeof (char);
-		if ((sptr = (char *)malloc(len)) == NULL)
+		free (name);
+		len = (strlen(result[k]->value)+strlen(value)+2) * sizeof (char);
+		if ((sptr = (char *)malloc(len)) == NULL) {
+		    free (value);
 		    return NULL;
+		}
 		memset (sptr, 0, len);
-		sprintf (sptr, "%s\n", result[k]->value);
-		strncat(sptr, cp, ip-esp);
-		free(result[k]->value);
-		result[k]->value = cgiDecodeString (sptr);
+		sprintf (sptr, "%s\n%s", result[k]->value, value);
+		free (result[k]->value);
+		free (value);
+		result[k]->value = sptr;
+		cgiDebugOutput (1, "%s: %s", result[i]->name, result[i]->value);
 	    }
 	}
 	cp = ++ip;
