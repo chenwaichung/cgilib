@@ -1,6 +1,6 @@
 /*
     cgi.h - Routines for CGI programming
-    Copyright (c) 1996-8,2007  Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1996-8,2007,8  Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 
 #ifndef _CGI_H_
 #define _CGI_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct var_s {
 	char	*name,
@@ -137,5 +141,9 @@ void cgiFree (s_cgi *parms);
  * Escapes <&> in a string
  */
 char *cgiEscape (char *string);
+
+#ifdef __cplusplus
+extern }
+#endif
 
 #endif /* _CGI_H_ */
