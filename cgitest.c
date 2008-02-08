@@ -27,12 +27,16 @@
 #include <cgi.h>
 
 #define HTML_CSS "<style type=\"text/css\">\n\
-body { background-color: #f7f7f7; }\n\
+body { background-color: #afafff; }\n\
 .formbox { border: 1px solid black; background: #dedede; padding: 2px; margin: 5px; }\n\
+a:link, a:visited { text-decoration: none; }\n\
+.footer { border-top: 1px solid black; font-size: 80%%; }\n\
 </style>\n"
 
-#define HTML_HEAD "<html>\n<head><title>cgilib</title></head>\n<body>\n"
-#define HTML_FOOT "<hr><a href=\"http://www.infodrom.org/projects/cgilib/\">cgilib</a>\n</body></html>"
+#define HTML_HEAD "<html>\n<head><title>cgilib forms</title></head>\n<body>\n"
+#define HTML_FOOT "<div class=\"footer\">\
+<a href=\"http://www.infodrom.org/\">Infodrom Oldenburg</a>&nbsp;&nbsp;&nbsp;&nbsp;Project \
+<a href=\"http://www.infodrom.org/projects/cgilib/\">cgilib</a>\n</div></body></html>"
 
 #define HTML_FORMCONTENT "<table>\
 <tr><td valign=\"top\">Input</td><td><input name=string size=50></td></tr>\n\
@@ -48,7 +52,7 @@ s_cgi *cgi;
 
 void print_form()
 {
-    printf ("<h1>Test-Forms</h1>\n");
+    printf ("<h1>cgilib Test-Forms</h1>\n");
 
     printf ("<div class=\"formbox\">");
     printf ("<b>GET, display selected</b><br>\n");
