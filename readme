@@ -1,31 +1,41 @@
 Using this Library
 ------------------
-To use this library you need to include the cgi.h include file with the
-following command into your C programs:
+
+To use this library you need to include the cgi.h include file with
+the following expression into your C programs:
 
    #include <cgi.h>
 
 Additionally you'll have to add the library libcgi.a to the linker,
-either by modifying LDFLAGS in your makefiles or by adding `-lcgi' to
+either by modifying LDFLAGS in your Makefile or by adding `-lcgi' to
 the appropriate commandline.
+
 
 Test Suite
 ----------
 
-This library comes with a program called cgitest.c.  You can use it as
-reference implementation for this CGI library.  Therefore it should be
-included as source in your distribution.
+This library comes with a test suite both to demonstrate its features
+and to help you understand how it works.  The respective program is
+called cgitest.c.  You can use it as reference implementation for this
+CGI library.  It can also be used to debug the library by increasing
+its debug level.  Therefore it should be included as source in your
+distribution.
 
 If you want to test your forms you can use the following action.
 
-   <form action=/cgi-bin/cgitest/listall method=post>
+   <form action="/cgi-bin/cgitest/listall" method="post">
 
 The /listall target will display all environment variables, all CGI
-variables and all HTTP Cookies that were transmitted.  This way you
-can test your implementations quite easy.
+variables, all HTTP Cookies and refer to all files that were
+transmitted.  This way you can test your own implementations quite
+easy.
+
 
 Further Documentation
 ---------------------
+
+This section will refer to a number of URLs that document how this
+library and used protocols work
 
   The CGI Library
 
@@ -39,11 +49,40 @@ Further Documentation
 
     http://www.w3.org/Protocols/HTTP/Object_Headers.html
 
+
+
+Mailing Lists
+-------------
+
+A mailing list dedicated to discussions about this library has been
+created.  It is meant as a forum for users and developers of the
+lightweight CGI library and applications that make use of it.
+
+The lists address is <infodrom-cgilib@lists.infodrom.org>. 
+
+To subscribe to this list,
+
+ . send a mail to infodrom-cgilib-request@@lists.infodrom.org with the
+   word "subscribe" as subject, or
+
+ . send a mail to majordomo@@lists.infodrom.org with the body of
+   "subscribe infodrom-cgilib".
+
+The list is publicly archived at
+<http://lists.infodrom.org/infodrom-cgilib/>.
+
+A second mailing list exists as infodrom-cgilib-cvs on the same host.
+Only CVS messages and differences are distributed there.  Whenever new
+code is added to the CGI library, »cvs« generates a mail from these
+changes which will be sent to this particular list.  Discussions
+continue to take place on the first list.
+
+
 Feedback
 --------
 
 If you have additions, questions or improvements please don't hesitate
-to contact me.
+to contact either the mailing list or me personally.
 
 Infodrom Oldenburg
 Martin Schulze
