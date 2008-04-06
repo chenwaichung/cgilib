@@ -50,6 +50,25 @@ library and used protocols work
     http://www.w3.org/Protocols/HTTP/Object_Headers.html
 
 
+Development
+-----------
+
+Development of this library takes place in a public CVS repository.
+This offers a way to do versioning and provide a history for all files
+and changes.  At any time it is possible to restore an older version,
+partially or in total.  Additionally, lean patches can be applied and
+reverted.
+
+Log in:
+
+cvs -d :pserver:anonymous@cvs.infodrom.org:/var/cvs/infodrom login
+
+[Hit return]
+
+Check out CVS HEAD:
+
+cvs -d :pserver:anonymous@cvs.infodrom.org:/var/cvs/infodrom co cgilib
+
 
 Mailing Lists
 -------------
