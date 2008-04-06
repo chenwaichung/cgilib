@@ -79,10 +79,3 @@ Syntax
    header is semi-colon (;) everywhere.  A server should also accept
    comma (,) as the separator between cookie-values for future
    compatibility.
-
-  
-More Information
-----------------
-
-  If you want to find out more about cookies, please go to
-  http://www.infodrom.north.de/linx/ and search for "cookie".
