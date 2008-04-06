@@ -1,3 +1,13 @@
+Version 0.6, 2008/04/06
+
+ . Support for ';' as delimiter
+ . Properly return NULL when no value was found
+ . Support for multipart/form-data
+ . Support for file upload
+ . Added support for inclusion into C++
+ . Declare some arguments const (Neil Spring)
+ . Decode variable names and data
+
 Version 0.5, 1999/08/20
 
  . Added proper install target to main Makefile
