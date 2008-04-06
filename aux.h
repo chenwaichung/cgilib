@@ -1,6 +1,6 @@
 /*
     aux.h - Auxilliary code for CGI library
-    Copyright (C) 2007 by Martin Schulze <joey@infodrom.org>
+    Copyright (C) 2007,8 by Martin Schulze <joey@infodrom.org>
      
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

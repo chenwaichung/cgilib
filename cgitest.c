@@ -1,6 +1,6 @@
 /*
     cgitest.c - Testprogram for cgi.o
-    Copyright (c) 1998,9,2007 by Martin Schulze <joey@infodrom.org>
+    Copyright (c) 1998,9,2007,8 by Martin Schulze <joey@infodrom.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

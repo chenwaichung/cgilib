@@ -1,6 +1,6 @@
 /*
    jumpto.c - Jump to a given URL
-   Copyright (c) 1998  Martin Schulze <joey@orgatech.de>
+   Copyright (c) 1998,2008  Martin Schulze <joey@orgatech.de>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
