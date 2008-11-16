@@ -20,3 +20,7 @@ Stephen Uitti <suitti@olde.com>
 Neil Spring <nspring@zarathustra.saavie.org>
 
 	- Declare some arguments const
+
+Phil Brooke <pjb@scm.tees.ac.uk>
+
+	- Allow cookies without regular CGI POST/GET variables
