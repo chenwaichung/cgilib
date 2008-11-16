@@ -663,7 +663,23 @@ s_cgi *cgiInit()
     if (res)
 	res->cookies = cgiReadCookies ();
     else
-	return NULL;
+	{
+	    /* In some cases, we might have no other CGI results.
+	       But we still have cookies! */
+	    s_cookie **cookies;
+	    cookies = cgiReadCookies();
+	    if (cookies) {
+		/* We need to create a s_cgi structure. */
+		if ((res = (s_cgi *)malloc (sizeof (s_cgi))) == NULL)
+		    return NULL;
+		res->vars = NULL;
+		res->cookies = cookies;
+		res->files = NULL;
+		
+	    } else {
+		return NULL;
+	    }
+	}
 
     if (!res->vars && !res->cookies && !res->files) {
 	free (res);
