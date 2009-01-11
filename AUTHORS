@@ -2,6 +2,7 @@ This is a list of people who have helped me working on this CGI
 library.
 
 Martin Schulze <joey@infodrom.org>
+
 	- Design, Implementation, Maintenance
 
 Mikko Torni <mtorni@mail.freenet.hut.fi>
@@ -24,3 +25,7 @@ Neil Spring <nspring@zarathustra.saavie.org>
 Phil Brooke <pjb@scm.tees.ac.uk>
 
 	- Allow cookies without regular CGI POST/GET variables
+
+Michael Petullo <mike@flyn.org>
+
+	- Convert to GNU autotools and wrap strncpy() accordingly

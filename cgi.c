@@ -29,6 +29,10 @@
 #include <cgi.h>
 #include "aux.h"
 
+#ifndef HAVE_STRNDUP
+char *strndup(const char *s, size_t n);
+#endif
+
 char *cgiHeaderString = NULL;
 char *cgiType = NULL;
 
@@ -856,6 +860,18 @@ void cgiFree (s_cgi *parms)
 	cgiType = NULL;
     }
 }
+
+#ifndef HAVE_STRNDUP
+char *strndup(const char *s, size_t n) {
+    char *fnval;
+
+    if ((fnval = (char *)malloc (n + 1)) == NULL)
+	return NULL;
+    strncpy(fnval, s, n);
+    fnval[n] = '\0';
+    return fnval;
+}
+#endif
 
 /*
  * Local variables:
