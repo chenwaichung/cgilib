@@ -13,7 +13,7 @@ Compiling from Source
 To compile this package you'll have to execute the following two
 commands:
 
-../configure
+./configure
 make
 
 Compiling from CVS
