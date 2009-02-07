@@ -18,6 +18,7 @@
 lib_LTLIBRARIES = libcgi.la
 
 libcgi_la_SOURCES = cgi.c cookies.c aux.c
+libcgi_la_LDFLAGS = -version-info @SO_VERSION@
 
 bin_PROGRAMS = cgitest jumpto
 
