@@ -1,5 +1,4 @@
 AC_INIT(cgi.c)
-AC_CONFIG_AUX_DIR(config)
 
 AM_INIT_AUTOMAKE(cgilib, 0.6)
 SO_VERSION=0:0:0
