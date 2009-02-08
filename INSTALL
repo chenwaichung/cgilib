@@ -43,8 +43,8 @@ Run the following commands:
 
 aclocal
 autoconf
-libtoolize --force
-automake --add-missing --foreign
+libtoolize --force --copy
+automake --copy --add-missing --foreign
 
 Before building the final release tarball some files may be removed.
 
