@@ -1,9 +1,7 @@
-Version 0.7
+Version 0.7, 2008/02/08
 
  . Allow cookies without regular CGI POST/GET variables
-
-
-
+ . Use GNU autotools for strndup() detection and shared library building
 
 Version 0.6, 2008/04/06
 
