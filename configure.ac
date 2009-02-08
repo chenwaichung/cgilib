@@ -1,6 +1,6 @@
 AC_INIT(cgi.c)
 
-AM_INIT_AUTOMAKE(cgilib, 0.6)
+AM_INIT_AUTOMAKE(cgilib, 0.7)
 SO_VERSION=1:0:0
 
 AC_PROG_CC
