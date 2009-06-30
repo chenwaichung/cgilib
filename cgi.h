@@ -143,7 +143,7 @@ void cgiFree (s_cgi *parms);
 char *cgiEscape (char *string);
 
 #ifdef __cplusplus
-extern }
+}
 #endif
 
 #endif /* _CGI_H_ */
