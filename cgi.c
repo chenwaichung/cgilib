@@ -64,6 +64,7 @@ int cgiSetHeader (const char *name, const char *value)
 	if ((cgiHeaderString = (char *)malloc (len)) == NULL)
 	    return 0;
 	pivot = cgiHeaderString;
+	*pivot = '\0';
     }
     memset(pivot+1, 0, (cp-name + vp-value + 4));
 
