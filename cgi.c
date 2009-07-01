@@ -50,8 +50,11 @@ int cgiSetHeader (const char *name, const char *value)
     for (cp=name;*cp && *cp!=' ' && *cp!='\r' && *cp!='\n' && *cp!=':';cp++);
     for (vp=value;*vp && *vp!='\r' && *vp!='\n';vp++);
 
+    if (cp-name == 0 || vp-value == 0)
+	return 0;
+
     if (cgiHeaderString) {
-	len = (strlen (cgiHeaderString) + cp-name + vp-value + 5) * sizeof (char);
+	len = (strlen (cgiHeaderString) + cp-name + vp-value + 4) * sizeof (char);
 	if ((pivot = (char *)realloc (cgiHeaderString,len)) == NULL)
 	    return 0;
 	cgiHeaderString = pivot;
@@ -62,6 +65,8 @@ int cgiSetHeader (const char *name, const char *value)
 	    return 0;
 	pivot = cgiHeaderString;
     }
+    memset(pivot+1, 0, (cp-name + vp-value + 4));
+
     strncpy (pivot, name, cp-name);
     strncat (pivot, ": ", 2);
     strncat (pivot, value, vp-value);
